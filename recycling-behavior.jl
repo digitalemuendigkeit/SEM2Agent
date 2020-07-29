@@ -66,12 +66,12 @@ AVEVars = [
 #normalized means for variables
 MVar = Dict(VarKeys .=> MVals)
 
-MVar["BI"]
+# MVar["BI"]
 
 #normalized standard deviations for variables
 SDVar = Dict(VarKeys .=> SDVals)
 
-SDVar[VarKeys[1]]
+# SDVar[VarKeys[1]]
 
 #AVE for variables
 AVEVar = Dict(VarKeys .=> AVEVars)
@@ -79,27 +79,41 @@ AVEVar = Dict(VarKeys .=> AVEVars)
 #variable abbreviations as keys for the dicts
 BetaKeys = ["BIrecbeh", "ATBI", "SNBI", "PBCBI", "PMOBI", "SRBAT", "PNBSN", "SNBSN", "SEPBC", "FCPBC"]
 
+#beta values, normalized to a sum of 1 per successor
+BetaVals = [
+1
+0.245762712
+0.161016949
+0.449152542
+0.144067797
+1
+0.508196721
+0.491803279
+0.426966292
+0.573033708
+]
 
+Betas = Dict(BetaKeys .=> BetaVals)
 
 Random.seed!(123)
 
 
 
-poop = for m in 1:10
-    println(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)))
-end
+# poop = for m in 1:10
+#     println(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)))
+# end
+#
+# poop
+#
+# minipoop = for m in 1:10
+#     println(MVar[VarKeys[m]], SDVar[VarKeys[m]])
+#     end
+#
+#     for m in 1:10
+#         println(string(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)), ","))
+#     end
 
-poop
-
-minipoop = for m in 1:10
-    println(MVar[VarKeys[m]], SDVar[VarKeys[m]])
-    end
-
-    for m in 1:10
-        println(string(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)), ","))
-    end
-
-function initialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.5)
+function initialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.75)
     space = GridSpace(griddims, moore = true)
     properties = Dict(:min_to_recycle => min_to_recycle)
     model =
@@ -144,11 +158,105 @@ function initialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.5
     return model
 end
 
-function agent_step!(agent, model)
-    agent.PBC = 0.61 * (0)
-    count_neighbors_rec = 0
-    count_neighbors_trash = 0
-
-end
+# in the agent step, three regression equations have to be expressed
+# subjective norm = interaction with other agents
+# observe all neighbouring agents and adjust sn value
+# behavioral intention
+# behavior
 
 model = initialize()
+
+function agent_step!(agent, model)
+    minrecycle = model.min_to_recycle
+    neighbor_cells = node_neighbors(agent, model)
+    count_neighbors_rec = 0
+    count_neighbors_trash = 0
+    for neighor_cell in neighbor_cells
+        node_contents = get_node_contents(neighor_cell, model)
+        # skip iteration if the node is empty
+        length(node_contents) == 0 && continue
+        #otherwise, get first agent in the node
+        agent_id = node_contents[1]
+        # and increment count_neighbors_rec if neighbor is recycling
+        neighbor_agent_rec = model[agent_id].recbeh
+        if neighbor_agent_rec == true
+            count_neighbors_rec += 1
+        elseif neighbor_agent_rec == false
+            count_neighbors_trash += 1
+        end
+    end
+    # after counting the recycling neighbors, compute subjective norm
+    # The old PNB is kept for 1-AVE
+    agent.PNB = agent.PNB * (1 - AVEVar["PNB"]) + AVEVar["PNB"] * count_neighbors_rec / (count_neighbors_trash + count_neighbors_rec)
+    agent.SN = agent.SN * (1 - AVEVar["SN"]) + AVEVar["SN"] * (agent.PNB * Betas["PNBSN"] + agent.SNB * Betas["SNBSN"])
+    agent.BI = agent.BI * (1 - AVEVar["BI"]) + AVEVar["BI"] * (agent.AT * Betas["ATBI"] + agent.SN * Betas["SNBI"] + agent.PBC * Betas["PBCBI"] + agent.PMO * Betas["PMOBI"])
+    if agent.BI * Betas["BIrecbeh"] ≥ minrecycle
+        agent.recbeh = true
+    else
+        agent.recbeh = false
+    end
+    # this is probably not a very efficient way to do this...
+end
+
+d = Normal()
+rand(truncated(Normal(0.5, 0.25), 0, 1))
+
+
+function agent_random_step!(agent, model)
+    minrecycle = model.min_to_recycle
+    neighbor_cells = node_neighbors(agent, model)
+    count_neighbors_rec = 0
+    count_neighbors_trash = 0
+    for neighor_cell in neighbor_cells
+        node_contents = get_node_contents(neighor_cell, model)
+        # skip iteration if the node is empty
+        length(node_contents) == 0 && continue
+        #otherwise, get first agent in the node
+        agent_id = node_contents[1]
+        # and increment count_neighbors_rec if neighbor is recycling
+        neighbor_agent_rec = model[agent_id].recbeh
+        if neighbor_agent_rec == true
+            count_neighbors_rec += 1
+        elseif neighbor_agent_rec == false
+            count_neighbors_trash += 1
+        end
+    end
+    # after counting the recycling neighbors, compute subjective norm
+    # The old PNB is kept for 1-AVE
+    agent.PNB = rand(truncated(Normal(0.5, 0.25), 0, 1)) * (1 - AVEVar["PNB"]) + AVEVar["PNB"] * count_neighbors_rec / (count_neighbors_trash + count_neighbors_rec)
+    agent.SN = rand(truncated(Normal(0.5, 0.25), 0, 1)) * (1 - AVEVar["SN"]) + AVEVar["SN"] * (agent.PNB * Betas["PNBSN"] + agent.SNB * Betas["SNBSN"])
+    agent.BI = rand(truncated(Normal(0.5, 0.25), 0, 1)) * (1 - AVEVar["BI"]) + AVEVar["BI"] * (agent.AT * Betas["ATBI"] + agent.SN * Betas["SNBI"] + agent.PBC * Betas["PBCBI"] + agent.PMO * Betas["PMOBI"])
+    if agent.BI * Betas["BIrecbeh"] ≥ minrecycle
+        agent.recbeh = true
+    else
+        agent.recbeh = false
+    end
+end
+
+step!(model, agent_step!)
+
+adata = [:pos, :recbeh]
+
+model = initialize()
+data, _ = run!(model, agent_step!, 10; adata = adata)
+data[1:10, :]
+
+model = initialize()
+reccolor(a) = a.recbeh == true ? :green : :red
+plotabm(model; ac = reccolor, as = 4)
+
+anim = @animate for i in 0:10
+    p1 = plotabm(model; ac = reccolor, as = 4)
+    title!(p1, "step$(i)")
+    step!(model, agent_step!, 1)
+end
+
+gif(anim, "trashpanda.gif", fps = 2)
+
+animrandom = @animate for i in 0:10
+    p1 = plotabm(model; ac = reccolor, as = 4)
+    title!(p1, "step$(i)")
+    step!(model, agent_random_step!, 1)
+end
+
+gif(animrandom, "randomtrashpanda.gif", fps = 2)
