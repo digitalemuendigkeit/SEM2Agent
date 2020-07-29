@@ -19,7 +19,10 @@ mutable struct TrashPanda <: AbstractAgent
     FC::Float64
 end
 
+#variable abbreviations as keys for the dicts
 VarKeys = ["BI", "AT", "SN", "PBC", "PMO", "SRB", "PNB", "SNB", "SE", "FC"]
+
+#normalized mean values from descriptive statistics
 MVals = [
 0.78
 0.87
@@ -32,6 +35,7 @@ MVals = [
 0.69
 0.69]
 
+#normalized sd values from descriptive statistics
 SDVals = [
 0.26
 0.17
@@ -45,6 +49,7 @@ SDVals = [
 0.20
 ]
 
+#ave (R²) for different variables
 AVEVars = [
 0.9
 0.85
@@ -71,10 +76,17 @@ SDVar[VarKeys[1]]
 #AVE for variables
 AVEVar = Dict(VarKeys .=> AVEVars)
 
+#variable abbreviations as keys for the dicts
+BetaKeys = ["BIrecbeh", "ATBI", "SNBI", "PBCBI", "PMOBI", "SRBAT", "PNBSN", "SNBSN", "SEPBC", "FCPBC"]
+
+
+
 Random.seed!(123)
 
+
+
 poop = for m in 1:10
-    println(rand(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]])))
+    println(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)))
 end
 
 poop
@@ -83,7 +95,9 @@ minipoop = for m in 1:10
     println(MVar[VarKeys[m]], SDVar[VarKeys[m]])
     end
 
-
+    for m in 1:10
+        println(string(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)), ","))
+    end
 
 function initialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.5)
     space = GridSpace(griddims, moore = true)
@@ -100,29 +114,30 @@ function initialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.5
         #recbeh
         n < numagents / 2 ? true : false,
         #other variables
-        for m in 1:10
-            rand(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]))
-        end
-        # #BI
-        # rand(Normal(0.78, 0.26)),
-        # #AT
-        # rand(Normal(0.87, 0.17)),
-        # #SN
-        # rand(Normal(0.84, 0.22)),
-        # #PBC
-        # rand(Normal(0.83, 0.20)),
-        # #PMO
-        # rand(Normal(0.91, 0.14)),
-        # #SRB
-        # rand(Normal(0.85, 0.18)),
-        # #PNB
-        # rand(Normal(0.72, 0.14)),
-        # #SNB
-        # rand(Normal(0.83, 0.16)),
-        # #SE
-        # rand(Normal(0.69, 0.21)),
-        # #FC
-        # rand(Normal(0.69, 0.20))
+        # for m in 1:10
+        #     rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)),
+        #     string(",")
+        # end
+        #BI
+        rand(truncated(Normal(MVar["BI"], SDVar["BI"]), 0, 1)),
+        #AT
+        rand(truncated(Normal(MVar[VarKeys[2]], SDVar[VarKeys[2]]), 0, 1)),
+        #SN
+        rand(truncated(Normal(MVar[VarKeys[3]], SDVar[VarKeys[3]]), 0, 1)),
+        #PBC
+        rand(truncated(Normal(MVar[VarKeys[4]], SDVar[VarKeys[4]]), 0, 1)),
+        #PMO
+        rand(truncated(Normal(MVar[VarKeys[5]], SDVar[VarKeys[5]]), 0, 1)),
+        #SRB
+        rand(truncated(Normal(MVar[VarKeys[6]], SDVar[VarKeys[6]]), 0, 1)),
+        #PNB
+        rand(truncated(Normal(MVar[VarKeys[7]], SDVar[VarKeys[7]]), 0, 1)),
+        #SNB
+        rand(truncated(Normal(MVar[VarKeys[8]], SDVar[VarKeys[8]]), 0, 1)),
+        #SE
+        rand(truncated(Normal(MVar[VarKeys[9]], SDVar[VarKeys[9]]), 0, 1)),
+        #FC
+        rand(truncated(Normal(MVar[VarKeys[10]], SDVar[VarKeys[10]]), 0, 1)),
         )
         add_agent_single!(agent, model)
     end
