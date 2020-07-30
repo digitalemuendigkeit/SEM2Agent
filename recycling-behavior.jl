@@ -2,6 +2,7 @@ using Agents
 using AgentsPlots
 using Distributions
 using Random
+using DataFrames
 
 mutable struct TrashPanda <: AbstractAgent
     id::Int64
@@ -235,11 +236,29 @@ end
 
 step!(model, agent_step!)
 
-adata = [:pos, :recbeh]
+adata = [:pos, :recbeh, :BI, :SN, :PNB]
 
 model = initialize()
 data, _ = run!(model, agent_step!, 10; adata = adata)
 data[1:10, :]
+
+function recrate(df::DataFrame, x::Int64)
+    stepdf = filter(row -> row[:step] == x, df)
+    number_rec = length(findall(stepdf.recbeh.==1))
+    return number_rec/length(stepdf.recbeh)
+end
+recrate(data, 0)
+
+recbeginning = recrate(data, 0)
+recend = recrate(data, 10)
+
+modelrandom = initialize()
+randomdata, _ = run!(modelrandom, agent_random_step!, 10; adata = adata)
+data[1:10, :]
+
+rrecbeginning = recrate(randomdata, 0)
+rrecend = recrate(randomdata, 10)
+# how many agents recycle in the beginning? and in  the end?
 
 model = initialize()
 reccolor(a) = a.recbeh == true ? :green : :red
@@ -247,7 +266,7 @@ plotabm(model; ac = reccolor, as = 4)
 
 anim = @animate for i in 0:10
     p1 = plotabm(model; ac = reccolor, as = 4)
-    title!(p1, "step$(i)")
+    title!(p1, "Trash Panda with great memory, step$(i)")
     step!(model, agent_step!, 1)
 end
 
@@ -255,7 +274,7 @@ gif(anim, "trashpanda.gif", fps = 2)
 
 animrandom = @animate for i in 0:10
     p1 = plotabm(model; ac = reccolor, as = 4)
-    title!(p1, "step$(i)")
+    title!(p1, "Random Trash Panda, step$(i)")
     step!(model, agent_random_step!, 1)
 end
 
