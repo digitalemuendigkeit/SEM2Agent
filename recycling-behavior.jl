@@ -98,22 +98,9 @@ Betas = Dict(BetaKeys .=> BetaVals)
 
 Random.seed!(123)
 
+normie = truncated(Normal(0.5, 0.17), 0, 1)
 
-
-# poop = for m in 1:10
-#     println(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)))
-# end
-#
-# poop
-#
-# minipoop = for m in 1:10
-#     println(MVar[VarKeys[m]], SDVar[VarKeys[m]])
-#     end
-#
-#     for m in 1:10
-#         println(string(rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)), ","))
-#     end
-
+# model initialization with empirical properties
 function initialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.75)
     space = GridSpace(griddims, moore = true)
     properties = Dict(:min_to_recycle => min_to_recycle)
@@ -159,14 +146,60 @@ function initialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.7
     return model
 end
 
+# model initialization with properties drawn from
+# a normal distribution from 0 to 1 (with mu = 0.5, sigma = 0.17)
+function norminitialize(; numagents = 320, griddims = (20, 20), min_to_recycle = 0.75)
+    space = GridSpace(griddims, moore = true)
+    properties = Dict(:min_to_recycle => min_to_recycle)
+    model =
+        ABM(TrashPanda, space; properties = properties, scheduler = random_activation)
+    for n in 1:numagents
+        # arguments are agent properties, first is id, second is pos, 3rd is recbeh and so on normal distribution
+        agent = TrashPanda(
+        #id
+        n,
+        #pos
+        (1, 1),
+        #recbeh
+        n < numagents / 2 ? true : false,
+        #other variables
+        # for m in 1:10
+        #     rand(truncated(Normal(MVar[VarKeys[m]], SDVar[VarKeys[m]]), 0, 1)),
+        #     string(",")
+        # end
+        #BI
+        rand(normie),
+        #AT
+        rand(normie),
+        #SN
+        rand(normie),
+        #PBC
+        rand(normie),
+        #PMO
+        rand(normie),
+        #SRB
+        rand(normie),
+        #PNB
+        rand(normie),
+        #SNB
+        rand(normie),
+        #SE
+        rand(normie),
+        #FC
+        rand(normie),
+        )
+        add_agent_single!(agent, model)
+    end
+    return model
+end
+
 # in the agent step, three regression equations have to be expressed
 # subjective norm = interaction with other agents
 # observe all neighbouring agents and adjust sn value
 # behavioral intention
 # behavior
 
-model = initialize()
-
+# the agent uses its previous properties as for the part not accounted for by R²
 function agent_step!(agent, model)
     minrecycle = model.min_to_recycle
     neighbor_cells = node_neighbors(agent, model)
@@ -191,7 +224,13 @@ function agent_step!(agent, model)
     agent.PNB = agent.PNB * (1 - AVEVar["PNB"]) + AVEVar["PNB"] * count_neighbors_rec / (count_neighbors_trash + count_neighbors_rec)
     agent.SN = agent.SN * (1 - AVEVar["SN"]) + AVEVar["SN"] * (agent.PNB * Betas["PNBSN"] + agent.SNB * Betas["SNBSN"])
     agent.BI = agent.BI * (1 - AVEVar["BI"]) + AVEVar["BI"] * (agent.AT * Betas["ATBI"] + agent.SN * Betas["SNBI"] + agent.PBC * Betas["PBCBI"] + agent.PMO * Betas["PMOBI"])
-    if agent.BI * Betas["BIrecbeh"] ≥ minrecycle
+    # take out beta
+    # if agent.BI * Betas["BIrecbeh"] ≥ minrecycle
+    #     agent.recbeh = true
+    # else
+    #     agent.recbeh = false
+    # end
+    if agent.BI ≥ minrecycle
         agent.recbeh = true
     else
         agent.recbeh = false
@@ -199,11 +238,8 @@ function agent_step!(agent, model)
     # this is probably not a very efficient way to do this...
 end
 
-d = Normal()
-rand(truncated(Normal(0.5, 0.25), 0, 1))
-
-
-function agent_random_step!(agent, model)
+# the agent uses its previous properties as for the part not accounted for by R²
+function agent_amnesiac_step!(agent, model)
     minrecycle = model.min_to_recycle
     neighbor_cells = node_neighbors(agent, model)
     count_neighbors_rec = 0
@@ -224,23 +260,27 @@ function agent_random_step!(agent, model)
     end
     # after counting the recycling neighbors, compute subjective norm
     # The old PNB is kept for 1-AVE
-    agent.PNB = rand(truncated(Normal(0.5, 0.25), 0, 1)) * (1 - AVEVar["PNB"]) + AVEVar["PNB"] * count_neighbors_rec / (count_neighbors_trash + count_neighbors_rec)
-    agent.SN = rand(truncated(Normal(0.5, 0.25), 0, 1)) * (1 - AVEVar["SN"]) + AVEVar["SN"] * (agent.PNB * Betas["PNBSN"] + agent.SNB * Betas["SNBSN"])
-    agent.BI = rand(truncated(Normal(0.5, 0.25), 0, 1)) * (1 - AVEVar["BI"]) + AVEVar["BI"] * (agent.AT * Betas["ATBI"] + agent.SN * Betas["SNBI"] + agent.PBC * Betas["PBCBI"] + agent.PMO * Betas["PMOBI"])
-    if agent.BI * Betas["BIrecbeh"] ≥ minrecycle
+    agent.PNB = rand(normie) * (1 - AVEVar["PNB"]) + AVEVar["PNB"] * count_neighbors_rec / (count_neighbors_trash + count_neighbors_rec)
+    agent.SN = rand(normie) * (1 - AVEVar["SN"]) + AVEVar["SN"] * (agent.PNB * Betas["PNBSN"] + agent.SNB * Betas["SNBSN"])
+    agent.BI = rand(normie) * (1 - AVEVar["BI"]) + AVEVar["BI"] * (agent.AT * Betas["ATBI"] + agent.SN * Betas["SNBI"] + agent.PBC * Betas["PBCBI"] + agent.PMO * Betas["PMOBI"])
+    # take out beta
+    # if agent.BI * Betas["BIrecbeh"] ≥ minrecycle
+    #     agent.recbeh = true
+    # else
+    #     agent.recbeh = false
+    # end
+    if agent.BI ≥ minrecycle
         agent.recbeh = true
     else
         agent.recbeh = false
     end
 end
 
-step!(model, agent_step!)
-
 adata = [:pos, :recbeh, :BI, :SN, :PNB]
 
-model = initialize()
-data, _ = run!(model, agent_step!, 10; adata = adata)
-data[1:10, :]
+# model = norminitialize()
+# data, _ = run!(model, agent_step!, 10; adata = adata)
+# data[1:10, :]
 
 function recrate(df::DataFrame, x::Int64)
     stepdf = filter(row -> row[:step] == x, df)
@@ -249,33 +289,51 @@ function recrate(df::DataFrame, x::Int64)
 end
 recrate(data, 0)
 
-recbeginning = recrate(data, 0)
-recend = recrate(data, 10)
+reccolor(a) = a.recbeh == true ? :blue : :red
 
-modelrandom = initialize()
-randomdata, _ = run!(modelrandom, agent_random_step!, 10; adata = adata)
-data[1:10, :]
+# recbeginning = recrate(data, 0)
+# recend = recrate(data, 10)
 
-rrecbeginning = recrate(randomdata, 0)
-rrecend = recrate(randomdata, 10)
-# how many agents recycle in the beginning? and in  the end?
-
-model = initialize()
-reccolor(a) = a.recbeh == true ? :green : :red
-plotabm(model; ac = reccolor, as = 4)
-
-anim = @animate for i in 0:10
-    p1 = plotabm(model; ac = reccolor, as = 4)
-    title!(p1, "Trash Panda with great memory, step$(i)")
-    step!(model, agent_step!, 1)
+empmodel = initialize(numagents = 320, griddims = (20, 20), min_to_recycle = 0.75)
+empdata, _ = run!(empmodel, agent_step!, 10; adata = adata)
+emprecrate = (recrate(empdata, 0), recrate(empdata, 10))
+empmodel = initialize(numagents = 320, griddims = (20, 20), min_to_recycle = 0.75)
+empanim = @animate for i in 0:10
+    p1 = plotabm(empmodel; ac = reccolor, as = 4)
+    title!(p1, "Empirical Trash Panda with great memory, step $(i)")
+    step!(empmodel, agent_step!, 10)
 end
+gif(empanim, "emptrashpanda.gif", fps = 2)
 
-gif(anim, "trashpanda.gif", fps = 2)
-
-animrandom = @animate for i in 0:10
-    p1 = plotabm(model; ac = reccolor, as = 4)
-    title!(p1, "Random Trash Panda, step$(i)")
-    step!(model, agent_random_step!, 1)
+empammodel = initialize()
+empamdata, _ = run!(empammodel, agent_amnesiac_step!, 10; adata = adata)
+empammodel = initialize()
+empamrecrate = (recrate(empamdata, 0), recrate(empamdata, 10))
+empanim = @animate for i in 0:10
+    p1 = plotabm(empammodel; ac = reccolor, as = 4)
+    title!(p1, "Empirical Trash Panda with amnesia, step $(i)")
+    step!(empammodel, agent_amnesiac_step!, 1)
 end
+gif(empanim, "empamtrashpanda.gif", fps = 2)
 
-gif(animrandom, "randomtrashpanda.gif", fps = 2)
+normmodel = norminitialize(numagents = 320, griddims = (20, 20), min_to_recycle = 0.5)
+normdata, _ = run!(normmodel, agent_step!, 10; adata = adata)
+normmodel = norminitialize(numagents = 320, griddims = (20, 20), min_to_recycle = 0.5)
+normrecrate = (recrate(normdata, 0), recrate(normdata, 10))
+normanim = @animate for i in 0:10
+    p1 = plotabm(normmodel; ac = reccolor, as = 4)
+    title!(p1, "Normal Trash Panda with great memory, step $(i)")
+    step!(normmodel, agent_step!, 1)
+end
+gif(normanim, "normtrashpanda.gif", fps = 2)
+
+normammodel = norminitialize(numagents = 320, griddims = (20, 20), min_to_recycle = 0.5)
+normamdata, _ = run!(normammodel, agent_amnesiac_step!, 10; adata = adata)
+normammodel = norminitialize(numagents = 320, griddims = (20, 20), min_to_recycle = 0.5)
+normamrecrate = (recrate(normamdata, 0), recrate(normamdata, 10))
+normamanim = @animate for i in 0:10
+    p1 = plotabm(normammodel; ac = reccolor, as = 4)
+    title!(p1, "Normal Trash Panda with amnesia, step $(i)")
+    step!(normammodel, agent_amnesiac_step!, 1)
+end
+gif(normamanim, "normamtrashpanda.gif", fps = 2)
