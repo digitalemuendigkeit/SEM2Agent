@@ -31,8 +31,8 @@ W_A = CSV.read("model_yolo-farming\\data\\yolo-wa-change.csv", DataFrame, types 
 # They can be set to anything between 0 (very bad) and 1 (excellent)
 
 # Initialize function
-function initialize(; numagents = 100, P_C = 0.5)
-    properties = Dict(:P_C => P_C)
+function initialize(; numagents = 100, P_C = 0.5, propparticipants = 0)
+    properties = Dict(:P_C => P_C, :propparticipants => propparticipants)
     model =
         ABM(Farmer; properties = properties, scheduler = random_activation)
     for n in 1:numagents
@@ -40,9 +40,9 @@ function initialize(; numagents = 100, P_C = 0.5)
         agent = Farmer(
         # id
         n,
-        # yc
+        # yc - year counter
         0,
-        # W_A_C
+        # W_A_C - water availability counter
         0,
         # C_E: replace with "random" sampling
         if n < .43*numagents
@@ -79,7 +79,12 @@ function initialize(; numagents = 100, P_C = 0.5)
         #P_I_C
         0,
         #P_P
-        false,
+        # let's say we have half the farmers participating
+        if n < numagents*propparticipants
+            true
+        else
+            false
+        end,
         )
         add_agent!(agent, model)
     end
@@ -96,13 +101,21 @@ function agent_step!(agent, model)
     else
         agent.W_A_C = agent.W_A_C - 1
     end
-    # update climate change experience
-    if agent.W_A_C > 2 && agent.C_E < 1
+    # # update climate change experience
+    if agent.W_A_C > 1 && agent.C_E < 1
         agent.C_E = agent.C_E + 0.1
-    elseif agent.W_A_C < 1 && agent.C_E > 0
+    elseif agent.W_A_C < -1 && agent.C_E > 0
         agent.C_E = agent.C_E - 0.1
     else agent.C_E = agent.C_E
     end
+    # update climate change experience
+    # if W_A[agent.yc+1,3] < 0 && agent.C_E < 1
+    #     agent.C_E = agent.C_E + 0.1
+    # elseif W_A[agent.yc+1,3] > 0 && agent.C_E > 0
+    #     agent.C_E = agent.C_E - 0.1
+    # else
+    #     agent.C_E = agent.C_E
+    # end
     # updated policy participation counter
     if agent.P_P == false
         agent.P_P_C = 0
@@ -110,19 +123,20 @@ function agent_step!(agent, model)
         agent.P_P_C = agent.P_P_C + 1
     end
     # update past policy experience
-    if agent.P_P_C == 0 && agent.P_E < 0.70
+    if agent.P_P == false && agent.P_E < 0.70
         agent.P_E = agent.P_E + 0.01
-    elseif agent.P_P_C == 0 && agent.P_E >= 0.70
+    elseif agent.P_P == false && agent.P_E >= 0.70
         agent.P_E = agent.P_E
     else
-        agent.P_E = (agent.P_E + agent.P_C  * agent.P_P_C / (agent.P_P_C + 2) ) / 2
+        agent.P_E = (agent.P_E + model.P_C  * agent.P_P_C / (agent.P_P_C + 2) ) / 2
     end
     # calculate climate change belief
     agent.C_B = 0.39 * agent.C_B + 0.61 * (0.24 * agent.C_E + 0.76 * agent.P_E)
     # calculate perceived climate change risk
     agent.C_R = 0.2 * agent.C_R + 0.8 * (0.88 * agent.C_B + 0.12 * agent.C_E - 0.14*agent.P_E)
     # calculate program participation intention
-    agent.P_I = - 0.18 * agent.C_E + agent.C_R
+    # agent.P_I = - 0.18 * agent.C_E + agent.C_R
+    agent.P_I = 0.28 * agent.P_I - 0.13 * agent.C_E + 0.72 * agent.C_R
     # update participation intention counter
     if agent.P_I >= 0.8
         agent.P_I_C = agent.P_I_C + 1
@@ -134,7 +148,7 @@ function agent_step!(agent, model)
     # update program participation
     if agent.P_I_C > 1
         agent.P_P = true
-    elseif agent.P_I_C < 1
+    elseif agent.P_I_C < -1
         agent.P_P = false
     else
         agent.P_P = agent.P_P
@@ -142,10 +156,9 @@ function agent_step!(agent, model)
 end
 
 observe = [:yc, :W_A_C, :C_E, :C_R, :C_B, :P_E, :P_I, :P_I_C, :P_P]
-model = initialize(numagents = 10, P_C = 1)
+model = initialize(numagents = 100, P_C = 1, propparticipants = 0)
 # run!(model, agent_step!, 10)
 obsdata, _ = run!(model, agent_step!, 20; adata = observe)
-
 obsdatasumm = combine(groupby(obsdata, "step"), :C_E => mean, :C_R => mean,
 :C_B => mean, :P_E => mean, :P_I => mean, :P_I_C => mean, :P_P => count)
 obsdatasumm.W_A = 1 .- W_A[1:21,2]
@@ -155,4 +168,4 @@ plotx = obsdatasumm.step
 #ploty = [obsdatasumm.W_A obsdatasumm.C_E_mean obsdatasumm.P_E_mean obsdatasumm.C_B_mean obsdatasumm.C_R_mean obsdatasumm.P_I_mean obsdatasumm.P_P_perc]
 ploty = Matrix(obsdatasumm[:,[9,2,5,4,3,6,10]])
 plotlabels = ["Water availability" "CC Experience" "Policy Experience" "CC Belief" "Perceived CC Risk" "Participation Intention" "Participation"]
-plot(plotx, ploty, label = plotlabels)
+plot(plotx, ploty, label = plotlabels, legend = :bottomright)
