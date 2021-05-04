@@ -4,6 +4,7 @@ using DataFrames
 using Distributions
 using Random
 using StatsPlots
+using Plots
 
 Random.seed!(123)
 
@@ -44,9 +45,9 @@ function initialize(; numagents = 100, P_C = 0.5)
         # W_A_C
         0,
         # C_E: replace with "random" sampling
-        if n < 43*100/numagents
+        if n < .43*numagents
             1
-        elseif n < 99*100/numagents
+        elseif n < .99*numagents
             0.5
         else
             0
@@ -56,13 +57,13 @@ function initialize(; numagents = 100, P_C = 0.5)
         # P_E
         rand(truncated(Normal(0.54, 0.341), 0, 1)),
         # C_B: replace with "random sampling"
-        if n < 20*100/numagents
+        if n < .20*numagents
             1
-        elseif n < 40*100/numagents
+        elseif n < .40*numagents
             0.75
-        elseif n < 70*100/numagents
+        elseif n < .70*numagents
             0.5
-        elseif n < 90*100/numagents
+        elseif n < .90*numagents
             0.25
         else
             0
@@ -70,7 +71,7 @@ function initialize(; numagents = 100, P_C = 0.5)
         # C_R:
         rand(truncated(Normal(0.5, 0.341), 0, 1)),
         #P_I: replace with "random sampling"
-        if n < 48*100/numagents
+        if n < .48*numagents
             rand((0.8,1))
         else
             rand((0,0.2,0.4,0.6))
@@ -97,9 +98,9 @@ function agent_step!(agent, model)
     end
     # update climate change experience
     if agent.W_A_C > 2 && agent.C_E < 1
-        agent.C_E = agent.C_E + 0.5
+        agent.C_E = agent.C_E + 0.1
     elseif agent.W_A_C < 1 && agent.C_E > 0
-        agent.C_E = agent.C_E - 0.5
+        agent.C_E = agent.C_E - 0.1
     else agent.C_E = agent.C_E
     end
     # updated policy participation counter
@@ -140,7 +141,18 @@ function agent_step!(agent, model)
     end
 end
 
-model = initialize()
-run!(model, agent_step!, 10)
-observe = [:yc, :W_A_C, :P_E, :P_I, :P_I_C, :P_P]
-obsdata, _ = run!(model, agent_step!, 10; adata = observe)
+observe = [:yc, :W_A_C, :C_E, :C_R, :C_B, :P_E, :P_I, :P_I_C, :P_P]
+model = initialize(numagents = 10, P_C = 1)
+# run!(model, agent_step!, 10)
+obsdata, _ = run!(model, agent_step!, 20; adata = observe)
+
+obsdatasumm = combine(groupby(obsdata, "step"), :C_E => mean, :C_R => mean,
+:C_B => mean, :P_E => mean, :P_I => mean, :P_I_C => mean, :P_P => count)
+obsdatasumm.W_A = 1 .- W_A[1:21,2]
+obsdatasumm.P_P_perc = obsdatasumm.P_P_count./maximum(obsdata.id)
+# Plots!
+plotx = obsdatasumm.step
+#ploty = [obsdatasumm.W_A obsdatasumm.C_E_mean obsdatasumm.P_E_mean obsdatasumm.C_B_mean obsdatasumm.C_R_mean obsdatasumm.P_I_mean obsdatasumm.P_P_perc]
+ploty = Matrix(obsdatasumm[:,[9,2,5,4,3,6,10]])
+plotlabels = ["Water availability" "CC Experience" "Policy Experience" "CC Belief" "Perceived CC Risk" "Participation Intention" "Participation"]
+plot(plotx, ploty, label = plotlabels)
