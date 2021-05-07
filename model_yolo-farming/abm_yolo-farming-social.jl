@@ -104,13 +104,16 @@ end
 # Define agent step function
 function agent_step!(agent, model)
     # Update climate change experience
-    if wateravailability.wacounter[model.stepcounter] > 1 && agent.ccexperience < 1
-        agent.ccexperience = agent.ccexperience + 0.1
-    elseif wateravailability.wacounter[model.stepcounter] < -1 && agent.ccexperience > 0
-        agent.ccexperience = agent.ccexperience - 0.1
-    else
-        agent.ccexperience = agent.ccexperience
-    end
+    agent.ccexperience = agent.ccexperience + mean(wateravailability.wachange[model.stepcounter : model.stepcounter + 2])
+    # if mean(wateravailability.wachange[model.stepcounter : model.stepcounter + 2]) < 0
+    #     agent.ccexperience < 1 ?
+    #     agent.ccexperience = agent.ccexperience + 0.1 :
+    #     agent.ccexperience = agent.ccexperience
+    # else
+    #     agent.ccexperience >= 0.1 ?
+    #     agent.ccexperience = agent.ccexperience - 0.1 :
+    #     agent.ccexperience = agent.ccexperience
+    # end
     # Update program participation counter
     agent.participation == true ? agent.ppcounter = agent.ppcounter + 1 : agent.ppcounter = 0
     # Update past policy experience
@@ -156,22 +159,26 @@ function agent_step!(agent, model)
     return agent
 end
 
+# Define model step
 function model_step!(model)
     model.stepcounter = model.stepcounter + 1
     return model
 end
 
+# Initialize model
 model = initialize()
-adata, _ = run!(model, agent_step!, model_step!, 10, adata = [:ccexperience,
+
+# collect data
+adata, _ = run!(model, agent_step!, model_step!, 15, adata = [:ccexperience,
 :ppexperience, :ccbelief, :ccrisk, :ppintention ,:participation])
 summarydata = combine(groupby(adata, "step"), :participation => count)
 obsdatasumm = combine(groupby(adata, "step"), :ccexperience => mean,
 :ppexperience => mean, :ccbelief => mean, :ccrisk => mean, :ppintention
 => mean, :participation => mean)
-obsdatasumm.wateravailability = wateravailability.wateravailability[1:11]
+obsdatasumm.wateravailability = wateravailability.wateravailability[3:18]
 # Plots!
 plotx = obsdatasumm.step
 #ploty = [obsdatasumm.W_A obsdatasumm.C_E_mean obsdatasumm.P_E_mean obsdatasumm.C_B_mean obsdatasumm.C_R_mean obsdatasumm.P_I_mean obsdatasumm.P_P_perc]
 ploty = Matrix(obsdatasumm[:,[8,2,3,4,5,6,7]])
 plotlabels = ["Water availability" "CC Experience" "Policy Experience" "CC Belief" "Perceived CC Risk" "Participation Intention" "Participation"]
-plot(plotx, ploty, label = plotlabels, legend = :topright)
+plot(plotx, ploty, label = plotlabels, legend = :bottomright)
