@@ -24,6 +24,8 @@ sample_pe = DataFrame(Arrow.Table("model_yolo-farming\\data-input\\sample-pe.arr
 # Program participation intention
 sample_pi = DataFrame(Arrow.Table("model_yolo-farming\\data-input\\sample-pw.arrow"))
 
+# set random seed
+Random.seed!(123)
 
 # Define space
 # Use LightGraphs to define space
@@ -32,7 +34,7 @@ g = LightGraphs.grid((10, 10), periodic = true)
 space = Agents.GraphSpace(g)
 
 # Define agent
-@agent  farmer GraphAgent begin
+@agent farmer GraphAgent begin
     # experience with climate change
     ccexperience::Float64
     # counts years the agent has participated in the program
@@ -60,7 +62,7 @@ function initialize(; socialthreshold = 0.5, participatefract = 0.5, programqual
     properties = Dict(:socialthreshold => socialthreshold,
                       :participatefract => participatefract,
                       :programquality => programquality,
-                      :stepcounter => 1)
+                      :stepcounter => 0)
     model = AgentBasedModel(farmer, space; properties = properties, scheduler = random_activation)
     for i in vertices(model.space.graph)
         add_agent!(
@@ -71,7 +73,7 @@ function initialize(; socialthreshold = 0.5, participatefract = 0.5, programqual
         i,
         # ccexperience
         sample(sample_ce[:,1], Weights(sample_ce[:,2])),
-        # policy participation counter
+        # program participation counter
         0,
         # past policy experience - probably overcomplicated haha
         sum(sample(sample_pe[1:2,3], Weights(sample_pe[1:2,4])) +
@@ -104,7 +106,7 @@ end
 # Define agent step function
 function agent_step!(agent, model)
     # Update climate change experience
-    agent.ccexperience = agent.ccexperience + mean(wateravailability.wachange[model.stepcounter : model.stepcounter + 2])
+    # agent.ccexperience = agent.ccexperience + mean(wateravailability.wachange[model.stepcounter : model.stepcounter + 2])
     # if mean(wateravailability.wachange[model.stepcounter : model.stepcounter + 2]) < 0
     #     agent.ccexperience < 1 ?
     #     agent.ccexperience = agent.ccexperience + 0.1 :
@@ -114,17 +116,33 @@ function agent_step!(agent, model)
     #     agent.ccexperience = agent.ccexperience - 0.1 :
     #     agent.ccexperience = agent.ccexperience
     # end
+    if wateravailability.wachange[model.stepcounter + 1] < wateravailability.wachange[model.stepcounter]
+        agent.ccexperience == 1 ?
+        agent.ccexperience = 1 :
+        agent.ccexperience = agent.ccexperience + 0.05
+    else
+        agent.ccexperience == 0 ?
+        agent.ccexperience = 0 :
+        agent.ccexperience = agent.ccexperience - 0.05
+    end
     # Update program participation counter
     agent.participation == true ? agent.ppcounter = agent.ppcounter + 1 : agent.ppcounter = 0
     # Update past policy experience
+    # This is roughly the yearly increase in policy approval based on
+    # previous policies
+    base_ppexperience = agent.ppexperience + 0.02
     if agent.participation == false
-        if agent.ppexperience < 0.70
-            agent.ppexperience = agent.ppexperience + 0.01
-        else
-            agent.ppexperience = agent.ppexperience
-        end
+    # If they do not participate in the new program
+    # Their perceptions of old policies/programs dominates
+        # Increase incrementally until a max of about 0.7
+        # which is the middle between the oldest two policies
+        agent.ppexperience < 0.70 ?
+        agent.ppexperience = base_ppexperience :
+        agent.ppexperience = agent.ppexperience
+    # If they do participate their perception of the quality increases as
+    # they participate longer
     else
-        agent.ppexperience = (agent.ppexperience +
+        agent.ppexperience = (base_ppexperience +
                                 model.programquality * agent.ppcounter /
                                 (agent.ppcounter + 2) ) / 2
     end
@@ -169,13 +187,13 @@ end
 model = initialize()
 
 # collect data
-adata, _ = run!(model, agent_step!, model_step!, 15, adata = [:ccexperience,
+adata, _ = run!(model, agent_step!, model_step!, agents_first=false, 15,  adata = [:ccexperience,
 :ppexperience, :ccbelief, :ccrisk, :ppintention ,:participation])
 summarydata = combine(groupby(adata, "step"), :participation => count)
 obsdatasumm = combine(groupby(adata, "step"), :ccexperience => mean,
 :ppexperience => mean, :ccbelief => mean, :ccrisk => mean, :ppintention
 => mean, :participation => mean)
-obsdatasumm.wateravailability = wateravailability.wateravailability[3:18]
+obsdatasumm.wateravailability = wateravailability.wateravailability[2:1+nrow(obsdatasumm)]
 # Plots!
 plotx = obsdatasumm.step
 #ploty = [obsdatasumm.W_A obsdatasumm.C_E_mean obsdatasumm.P_E_mean obsdatasumm.C_B_mean obsdatasumm.C_R_mean obsdatasumm.P_I_mean obsdatasumm.P_P_perc]
