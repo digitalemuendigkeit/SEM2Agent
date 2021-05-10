@@ -3,7 +3,7 @@ title: "Yolo farming translation scheme"
 description: |
   A new article created using the Distill format.
 author:
-  - name: Lilian Kojan
+  - name: Lilian Kojan and Laura Burbach
 date: "`r Sys.Date()`"
 output: distill::distill_article
 ---
@@ -11,22 +11,33 @@ output: distill::distill_article
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(distill)
+library(kableExtra)
+options(knitr.table.format = "html")
 ```
 
-This is an application of the SEM2Agent scheme for an ABM based on the SEM in "Perceptions and responses to climate policy risks among california farmers" by Niles et al. (2013).
 
 # Overview
 ## Purpose and patterns
-Describe:
-•	The model’s specific purpose(s).
-•	The patterns used as criteria for evaluating the model’s suitability for its purpose.
+The main purpose of this model is to demonstrate the SEM2Agent translation scheme.
+The secondary purpose is to examine the participation of farmers in a new climate policy program  dependent on their with such programs, their experience of experience of climate change and normative pressure.
+A possible pattern to evaluate this against would be empirical data on farmer‘s participation in such programs.
 
-Entities, state variables and scales
-Describe:
-•	The kinds of entities in the model, what they represent and why they were included. Are there different classes of agents?
-•	The state variables (i.e. attributes) of each kind of entity, usually in a table. For each state variable, describe exactly what it represents, its units, whether it is dynamic or static, its type, and its range.
-•	Whether and how the model and the simulation represent time (discrete and/or continuous) and why.
-•	Whether and how the model represents space (discrete and/or continuous) and why.
+
+## Entities, state variables and scales
+The model includes four entities.
+Firstly, the space which the agents occupy and which determines which agents are neighbors.
+Secondly, the water availability in Yolo county.
+Thirdly, a government climate program whose properties are stored in the model object.
+And lastly, agents which represent farmers.
+
+The following table shows all entities with their state variables.
+
+
+```{r}
+# You can prepare the table as a csv and upload it here.
+read.csv2("tables/ess_yolo-farming.csv")
+```
+
 
 Entity	State variable	Represents	Unit	Dynamic / static	Type	Range
 						

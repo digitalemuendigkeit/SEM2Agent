@@ -116,7 +116,7 @@ function agent_step!(agent, model)
     #     agent.ccexperience = agent.ccexperience - 0.1 :
     #     agent.ccexperience = agent.ccexperience
     # end
-    if wateravailability.wachange[model.stepcounter + 1] < wateravailability.wachange[model.stepcounter]
+    if wateravailability.wachange[model.stepcounter] < 0
         agent.ccexperience == 1 ?
         agent.ccexperience = 1 :
         agent.ccexperience = agent.ccexperience + 0.05
@@ -193,7 +193,7 @@ summarydata = combine(groupby(adata, "step"), :participation => count)
 obsdatasumm = combine(groupby(adata, "step"), :ccexperience => mean,
 :ppexperience => mean, :ccbelief => mean, :ccrisk => mean, :ppintention
 => mean, :participation => mean)
-obsdatasumm.wateravailability = wateravailability.wateravailability[2:1+nrow(obsdatasumm)]
+obsdatasumm.wateravailability = wateravailability.wateravailability[1:nrow(obsdatasumm)]
 # Plots!
 plotx = obsdatasumm.step
 #ploty = [obsdatasumm.W_A obsdatasumm.C_E_mean obsdatasumm.P_E_mean obsdatasumm.C_B_mean obsdatasumm.C_R_mean obsdatasumm.P_I_mean obsdatasumm.P_P_perc]

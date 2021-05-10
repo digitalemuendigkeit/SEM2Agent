@@ -18,7 +18,7 @@ select!(wa, :, AsTable(Not(:Year)) => sum => :droughtindex)
 # Define water availability (1 - droughtindex/500)
 wa.wateravailability = broadcast(-, 1, broadcast(/, wa.droughtindex, 500))
 # Add change in water availability from year to year
-wa.wachange = append!([0.0], -diff(wa.wateravailability))
+wa.wachange = append!([0.0], diff(wa.wateravailability))
 # Count years with negative and positive changes
 wacounter = zeros(Int, size(wa,1))
 for i in 2:length(wacounter)
@@ -60,19 +60,8 @@ pe = DataFrame(
 )
 # Save dataframe
 Arrow.write("model_yolo-farming\\data-input\\sample-pe.arrow", pe)
-# testsample = zeros(16)
-# for i in 1:length(testsample)
-#         testsample[i] = sum(sample(pe[1:2,3], Weights(pe[1:2,4])) +
-#                         sample(pe[1:2,5], Weights(pe[1:2,6])) +
-#                         sample(pe[3:4,3], Weights(pe[3:4,4])) +
-#                         sample(pe[3:4,5], Weights(pe[3:4,6])) +
-#                         sample(pe[5:6,3], Weights(pe[5:6,4])) +
-#                         sample(pe[5:6,5], Weights(pe[5:6,6])) +
-#                         sample(pe[7:8,3], Weights(pe[7:8,4])) +
-#                         sample(pe[7:8,5], Weights(pe[7:8,6])))/8
-# end
-# Climate change belief data: 0 = no belief, 1 = belief
 
+# Climate change belief data: 0 = no belief, 1 = belief
 # Agreement with "Average temperatures are increasing" gathered from figure
 cb = DataFrame(value = [0, 0.25, 0.5, 0.75, 1],
                 weight = [15, 15, 31, 23, 16])
@@ -92,4 +81,4 @@ Arrow.write("model_yolo-farming\\data-input\\sample-cr.arrow", cr)
 pw = DataFrame(value = [0, 0.25, 0.5, 0.75, 1],
                 weight = [17, 18, 17, 24, 24])
 # Save dataframe
-Arrow.write("model_yolo-farming\\data-input\\sample-pw.arrow", pw)             
+Arrow.write("model_yolo-farming\\data-input\\sample-pw.arrow", pw)
