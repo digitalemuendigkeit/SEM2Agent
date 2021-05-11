@@ -9,6 +9,15 @@ using Plots
 
 # Load input data
 # wenn Daten vorbereitet
+using DataFrames
+using Arrow
+using CSV
+using Distributions
+
+dsraw = CSV.read("ModelEmployeesSatMot/data-input/descriptive_statistics.csv", DataFrame, decimal = ',')
+
+#Tabelle zusammenfassen:
+ds = combine(groupby(dsraw,:Variable), :Mean => mean => :Mean, "Standard Deviation" => mean => :SD)
 
 # Define space
 # Use LightGraphs to define space
@@ -40,7 +49,15 @@ function initialize(; NicenessFraction = 0.5)
     model = AgentBasedModel(employee, space; properties = properties, scheduler = random_activation)
     for i in vertices(model.space.graph)
         add_agent!(
-        employee(i, i, 0.1, 0.4, sample([true, false], Weights([NicenessFraction, 1 - NicenessFraction])), 0.7, 0.3), i, model)
+        employee(i,
+                 i,
+                 rand(Normal(ds[1,2], ds[1,3])), # Stress
+                 rand(Normal(ds[2,2], ds[2,3])), # Relations
+                 sample([true, false], Weights([NicenessFraction, 1 - NicenessFraction])), # Niceness
+                 rand(Normal(ds[3,2], ds[3,3])), # Satisfaction
+                 rand(Normal(ds[4,2], ds[4,3]))), # Motivation
+                 i,
+                 model)
     end
     return model
 end
@@ -54,22 +71,21 @@ function agent_step!(agent, model)
     #update employee relations
     neighbor_list = neighbors(model.space.graph, agent.pos)
     fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
-    agent.EmployeeRelations = -0.713 * agent.Stress + (fraction_nice + EmployeeRelations)/2
-    agent.EmployeeSatisfaction = 0.262 * agent.EmployeeSatisfaction -0.192 * agent.Stress + 0.738 * EmployeeRelations
-    agent.EmployeeMotivation = 0.333 * EmployeeRelations + 0.667 * EmployeeSatisfaction
+    agent.EmployeeRelations = -0.713 * agent.Stress + (fraction_nice + agent.EmployeeRelations)/2
+    agent.EmployeeSatisfaction = 0.262 * agent.EmployeeSatisfaction -0.192 * agent.Stress + 0.738 * agent.EmployeeRelations
+    agent.EmployeeMotivation = 0.333 * agent.EmployeeRelations + 0.667 * agent.EmployeeSatisfaction
 end
 
 model = initialize()
 adata, _ = run!(model, agent_step!, 10, adata = [:Stress,
 :EmployeeNiceness, :EmployeeRelations, :EmployeeSatisfaction, :EmployeeMotivation])
-summarydata = combine(groupby(adata, "step"), :participation => count)
-obsdatasumm = combine(groupby(adata, "step"), :ccexperience => mean,
-:ppexperience => mean, :ccbelief => mean, :ccrisk => mean, :ppintention
-=> mean, :participation => mean)
-obsdatasumm.wateravailability = wateravailability.wateravailability[1:11]
+summarydata = combine(groupby(adata, "step"), :EmployeeMotivation => mean)
+obsdatasumm = combine(groupby(adata, "step"), :Stress => mean,
+:EmployeeNiceness => mean, :EmployeeRelations => mean, :EmployeeSatisfaction => mean, :EmployeeMotivation
+=> mean)
 # Plots!
 plotx = obsdatasumm.step
 #ploty = [obsdatasumm.W_A obsdatasumm.C_E_mean obsdatasumm.P_E_mean obsdatasumm.C_B_mean obsdatasumm.C_R_mean obsdatasumm.P_I_mean obsdatasumm.P_P_perc]
-ploty = Matrix(obsdatasumm[:,[8,2,3,4,5,6,7]])
-plotlabels = ["Water availability" "CC Experience" "Policy Experience" "CC Belief" "Perceived CC Risk" "Participation Intention" "Participation"]
+ploty = Matrix(obsdatasumm[:,2:6])
+plotlabels = ["Stress" "EmployeeNiceness" "EmployeeRelations" "EmployeeSatisfaction" "EmployeeMotivation"]
 plot(plotx, ploty, label = plotlabels, legend = :topright)
