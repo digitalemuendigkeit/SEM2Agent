@@ -7,4 +7,4 @@ dsraw = CSV.read("ModelEmployeesSatMot/data-input/descriptive_statistics.csv", D
 #Tabelle zusammenfassen:
 ds = combine(groupby(dsraw,:Variable), :Mean => mean => :Mean, "Standard Deviation" => mean => :SD)
 
-Arrow.write("ModelEmployeesSatMot\\data-input\\sampleds.arrow", ds)
+Arrow.write("ModelEmployeesSatMot/data-input/sampleds.arrow", ds)
