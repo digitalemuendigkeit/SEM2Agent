@@ -1,11 +1,14 @@
 ---
-title: "Yolo farming translation scheme"
+title: " translation scheme"
 description: |
-  A new article created using the Distill format.
+  The full SEM2Agent scheme for .
 author:
-  - name: Lilian Kojan and Laura Burbach
+  - name: 
 date: "`r Sys.Date()`"
-output: distill::distill_article
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -15,180 +18,135 @@ library(kableExtra)
 options(knitr.table.format = "html")
 ```
 
+This is an application of the SEM2Agent scheme for an ABM based on the SEM in:
 
 # Overview
 ## Purpose and patterns
-The main purpose of this model is to demonstrate the SEM2Agent translation scheme.
-The secondary purpose is to examine the participation of farmers in a new climate policy program  dependent on their with such programs, their experience of experience of climate change and normative pressure.
-A possible pattern to evaluate this against would be empirical data on farmer‘s participation in such programs.
+
 
 
 ## Entities, state variables and scales
-The model includes four entities.
-Firstly, the space which the agents occupy and which determines which agents are neighbors.
-Secondly, the water availability in Yolo county.
-Thirdly, a government climate program whose properties are stored in the model object.
-And lastly, agents which represent farmers.
+
 
 The following table shows all entities with their state variables.
+
+```{r}
+# You can prepare the table as a csv and upload it here.
+read.csv2() %>%
+  as.data.frame() %>%
+  kbl(col.names = c(
+            "Entity",
+            "State variable",
+            "Represents",
+            "Dynamic / static",
+            "Type",
+            "Range / value"
+          ))  %>% 
+  kable_styling()
+```						
+
+Representation of time:
+
+Representation of space:
+
+						
+
+## Process overview and scheduling
+
+
+# Design concepts
+## Basic principles
+
+
+## Emergence
+
+
+## Individual decision making
+
+
+## Adaptation
+
+
+## Objectives
+
+
+## Learning
+
+
+## Prediction
+
+
+
+## Sensing
+
+
+## Interaction
+
+
+## Heterogeneity
+
+
+## Stochasticity
+
+
+## Collectives
+
+
+## Observation
+
+
+# Details
+## Implementation details
+
+
+## Initialization
+
+
+## Input Data
+### Overview
+
+
+### Structure
 
 
 ```{r}
 # You can prepare the table as a csv and upload it here.
-read.csv2("tables/ess_yolo-farming.csv")
-```
+read.csv2() %>%
+  as.data.frame() %>% 
+  lapply(function(x) {gsub("\\*", "\\\\*", x)}) %>%
+  as.data.frame() %>% 
+  kbl(col.names = c(
+            "Variable",
+            "Range",
+            "Descriptive statistics",
+            "SEM regression equation",
+            "SEM R^2"
+          ))  %>% 
+  kable_styling()
+```				
+
+### Mapping
 
 
-Entity	State variable	Represents	Unit	Dynamic / static	Type	Range
-						
-						
-						
-						
-
-Process overview and scheduling
-Provide a complete but concise model schedule that defines exactly what happens each time step, presented as a hierarchy of “actions” that each describe which entity or entities execute which process or submodel, which state variables are updated, and (for actions executed by multiple entities such as all agents or spatial cells) the order in which the entities execute it.
-1.	…
-Design concepts
-Basic principles
-Describe:
-•	General concepts, theories or hypotheses underlying the model's design, both at system and agent levels.
-•	How those principles are taken into account and whether the model is designed to provide insight about the principles themselves.
-•	What literature or concepts agent behaviors are based on.
-
-Emergence
-Describe:
-•	Which key model results or outputs are modeled as emerging from the adaptive decisions and behaviors of agents, and the agent behaviors and characteristics and environment variables that results emerge from?
-•	Which model results are modeled not as emergent but as relatively imposed by model rules, and the model mechanisms or rules that impose them.
-•	The rationale for deciding which model results are more vs. less emergent.
-
-Individual decision making
-Describe:
-•	Subjects and objects, levels of decision-making.
-•	Rationality and objective behind decision-making.
-•	How do agents make their decisions?
-•	Do agents adapt their behavior to changing endogenous or exogeneous state variables?
-•	Do social norms or cultural values play a role in the decision-making process?
-•	Do spatial and/or temporal aspects play a role in the decision process?
-•	Is uncertainty included in the agents’ decision rules? If yes, how?
-
-Adaptation
-For each adaptive behavior of the agents, describe:
-•	What decision is made: what about themselves the agents are changing.
-•	The alternatives that agents choose from.
-•	The inputs that drive each decision: the internal and environmental variables that affect it.
-•	Whether the behavior is modeled via direct objective-seeking or instead via indirect objective-seeking.
-•	If direct objective-seeking is used, how the objective measure is used to select which alternative to execute.
-
-Objectives
-This section applies only if the adaptive behavior uses direct objective-seeking. Describe:
-•	What the objective measure represents: what characteristic of agent success does it model?
-•	What variables of the agent and its environment drive the objective measure, how the measure is calculated and rationale behind the measure.
-
-Learning
-Learning, as opposed to adaption, refers on a change of decision-making methods as a consequence of the agents' experience. If learning is included, describe:
-•	Which key model results or outputs are modeled as emerging from the adaptive decisions and behaviors of agents, and the agent behaviors and characteristics and environment variables that results emerge from.
-•	Which model results are modeled not as emergent but as relatively imposed by model rules, and the model mechanisms or rules that impose them.
-•	The rationale for deciding which model results are more vs. less emergent.
-
-Prediction
-Describe:
-•	How the models of adaptive behavior use either explicit or implicit (i.e. assumptions that drive decision-making) prediction.
-•	The rationale for how prediction is represented: is the model designed to represent how the agents actually make predictions? Or is prediction modeled as it is simply because it produces useful behavior?
-
-Sensing
-Describe:
-•	What state variables, of themselves and other entities, agents are assumed to sense (i.e., know about) and use in their behaviors. Say exactly what defines or limits the range over which agents can sense information.
-•	How the agents are assumed to sense each such variable: are they assumed simply to know the value accurately? Or does the model represent the mechanisms of sensing, or uncertainty in sensed values?
-•	The rationale for sensing assumptions.
-
-Interaction
-Describe which agents interact with each other and how:
-•	The kinds of interaction among agents in the model, including whether each kind is represented as direct or mediated interaction.
-•	For each kind of interaction, the range (over space, time, a network, etc.) over which agents interact. What determines which agents interact with whom?
-•	The rationale for how interaction is modeled.
-
-Heterogeneity
-Describe:
-•	Are the agents heterogeneous in their decision-making?
-•	If yes, which decision models or decision objects differ between the agents?
-
-Stochasticity
-Describe where and how stochastic processes—those driven by pseudorandom numbers—are used in the model (e.g. for variability in initial conditions):
-•	Which processes are modeled as stochastic, using pseudorandom number distributions to determine the outcome.
-•	Why stochasticity was used in each such process. Often, the reason is simply to make the process variable without having to model the causes of variability; or the reason could be to make model events or behaviors occur with a specified frequency.
-
-Collectives
-Collectives are aggregations of agents. Describe:
-•	Any collectives that are in the model.
-•	Whether the collectives are modeled as emerging entirely from agent behaviors, or instead as explicit entities.
-•	In overview, how the collectives interact with each other and the agents to drive the behaviors of the entire system. 
-
-Observation
-This concept describes how information from the ABM is collected and analyzed. Describe:
-•	The key outputs of the model used for analyses and how they were observed from the simulations. 
-•	Any “virtual scientist” or other special techniques used to improve comparison of model results to empirical observations.
-
-Details
-Implementation details
-Describe:
-•	How has the model been implemented (platform / programming language)?
-•	Is the model accessible, and if so where?
-
-Initialization
-Describe:
-•	What entities are created upon initialization, what determines how many of each are created, and how all their state variables are given initial values.
-•	How the initial locations of entities are set, if relevant, and how any initial collectives, networks, or other intermediate structures are created.
-•	Any site-specific data used to initialize the model: the data types, their sources, how they were processed, any known biases or uncertainties, and how they were used in initialization.
-•	Whether simulation experiments will typically use scenarios that differ in initialization methods; if so, say how initialization will vary.
-•	The rationale for key initialization methods. For example, explain why initial agents vary among each other in the way they do.
-
-Input Data
-Overview
-Describe:
-•	Where does data come from and how is it collected?
-•	What is the level of available data and how is it structured?
-
-Variable	Range	Descriptive statistics	SEM regression equation	SEM R²
-				
-				
-				
-				
-
-Structure
-Describe:
-•	What are the variables, entities and classes available in data and what do they represent?
-•	What is their format and what are their properties?
-•	How are they linked?
-
-Mapping
-Describe:
-•	How are data selected to form the agent entities?
-•	How is agent population generated and synthesized?
-•	How are data transformed to meet the purpose of the study and the model needs?
-•	How are variables structured?
-•	How are behaviors built based on relationships between attributes? How are new attributes constructed?
-•	What are the constraints that were applied to the original variables?
-
-State Variable	Range	Initialization	Calculation or Updating
-			
-			
-			
-			
-
-Patterns
-Describe:
-•	What are the relationships and patterns that exist in data?
-•	Are they translated into actions and behaviors in the model?
-•	How do some attribute variations affect other variables and then agent behaviors?
-
-Submodels
-This section is intended for all submodels not fully described in 'Process Overview and Scheduling' and 'Initialization'. Describe:
-•	All of the submodels, in a separate subsection for each.
-•	For each submodel, its equations, algorithms, parameters, and how parameter values were selected.
-•	The analyses used to test, calibrate, and understand submodels by themselves.
+```{r}
+# You can prepare the table as a csv and upload it here.
+read.csv2() %>%
+  as.data.frame() %>% 
+  lapply(function(x) {gsub("\\*", "\\\\*", x)}) %>%
+  as.data.frame() %>% 
+  kbl(col.names = c(
+            "Source variable",
+            "ABM state variable",
+            "Range",
+            "Initialization",
+            "Updating"
+          ))  %>% 
+  kable_styling()
+```	
 
 
+	
+### Patterns
 
 
-
-
+## Submodels
