@@ -5,10 +5,6 @@ using DataFrames
 using Statistics
 using StatsBase
 using Arrow
-# using CSV
-# using Distributions
-# using StatsPlots
-using Plots
 
 # Load input data
 # Water availability
@@ -58,11 +54,12 @@ end
 # socialthreshold = how many neighbors have to participate to influence the agent
 # participatefract = fraction of agents participating initially
 # policyquality = "true" quality of the new program
-function initialize(; socialthreshold = 0.5, participatefract = 0.5, programquality = 0.5)
+function initialize(; socialthreshold = 0.5, participatefract = 0.5,
+    programquality = 0.5, startyear = 2011)
     properties = Dict(:socialthreshold => socialthreshold,
                       :participatefract => participatefract,
                       :programquality => programquality,
-                      :stepcounter => 0)
+                      :stepcounter .=> startyear-2001)
     model = AgentBasedModel(farmer, space; properties = properties, scheduler = random_activation)
     for i in vertices(model.space.graph)
         add_agent!(
@@ -182,21 +179,3 @@ function model_step!(model)
     model.stepcounter = model.stepcounter + 1
     return model
 end
-
-# Initialize model
-model = initialize()
-
-# collect data
-adata, _ = run!(model, agent_step!, model_step!, agents_first=false, 15,  adata = [:ccexperience,
-:ppexperience, :ccbelief, :ccrisk, :ppintention ,:participation])
-summarydata = combine(groupby(adata, "step"), :participation => count)
-obsdatasumm = combine(groupby(adata, "step"), :ccexperience => mean,
-:ppexperience => mean, :ccbelief => mean, :ccrisk => mean, :ppintention
-=> mean, :participation => mean)
-obsdatasumm.wateravailability = wateravailability.wateravailability[1:nrow(obsdatasumm)]
-# Plots!
-plotx = obsdatasumm.step
-#ploty = [obsdatasumm.W_A obsdatasumm.C_E_mean obsdatasumm.P_E_mean obsdatasumm.C_B_mean obsdatasumm.C_R_mean obsdatasumm.P_I_mean obsdatasumm.P_P_perc]
-ploty = Matrix(obsdatasumm[:,[8,2,3,4,5,6,7]])
-plotlabels = ["Water availability" "CC Experience" "Policy Experience" "CC Belief" "Perceived CC Risk" "Participation Intention" "Participation"]
-plot(plotx, ploty, label = plotlabels, legend = :bottomright)
