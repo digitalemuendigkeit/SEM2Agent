@@ -5,7 +5,7 @@ using Arrow
 
 # Prepare water availability dataframe
 # Load data from U.S. Drought Monitor
-wa_raw = CSV.read("model_yolo-farming\\data-input\\USDM-Yolo-CA.csv", DataFrame)
+wa_raw = CSV.read("model_yolo-farming\\data-input\\USDM-Yolo-CA.csv", DataFrame, ignoreemptylines=true)
 # Extract years for grouping
 wa_raw.Year = SubString.(string.(wa_raw.MapDate), 1, 4)
 # Group years
@@ -48,7 +48,7 @@ pe = DataFrame(
         policy = ["pesticide", "pesticide", "rice", "rice", "water", "water",
                 "diesel", "diesel"],
         # how old the policy was at the time of the survey
-        age = [23, 23, 22, 22, 10, 10, 6, 6],
+        age = [21, 21, 19, 19, 8, 8, 4, 4],
         #  positive environmental impact: 1 = agree
         envvalue = repeat([1,0], 4),
         # percentage of agreement
