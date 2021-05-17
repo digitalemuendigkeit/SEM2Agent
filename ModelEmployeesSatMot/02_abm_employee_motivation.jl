@@ -6,18 +6,10 @@ using DataFrames
 using StatsBase
 using Arrow
 using Plots
-
-# Load input data
-# wenn Daten vorbereitet
-using DataFrames
-using Arrow
-using CSV
 using Distributions
 
-dsraw = CSV.read("ModelEmployeesSatMot/data-input/descriptive_statistics.csv", DataFrame, decimal = ',')
-
-#Tabelle zusammenfassen:
-ds = combine(groupby(dsraw,:Variable), :Mean => mean => :Mean, "Standard Deviation" => mean => :SD)
+# load data
+ds = DataFrame(Arrow.Table("ModelEmployeesSatMot/data-input/sampleds.arrow"))
 
 # Define space
 # Use LightGraphs to define space
@@ -44,8 +36,10 @@ end
 # Stress =
 # StressResistence =
 # NicenessFraction = how many agents are nice in the beginning
-function initialize(; NicenessFraction = 0.5)
-    properties = Dict(:NicenessFraction => NicenessFraction)
+function initialize(; NicenessFraction = 0.5, Stress = "constant")
+    properties = Dict(:NicenessFraction => NicenessFraction,
+                      :Stress => Stress,
+                      :stepcounter => 0)
     model = AgentBasedModel(employee, space; properties = properties, scheduler = random_activation)
     for i in vertices(model.space.graph)
         add_agent!(
@@ -62,22 +56,40 @@ function initialize(; NicenessFraction = 0.5)
     return model
 end
 
+model = initialize()
+agent1 = Agents.random_agent(model)
+neighbor_list = neighbors(model.space.graph, agent1.pos)
+rand(neighbor_list)
+model.properties
+
 function agent_step!(agent, model)
     #update stress (später wollen wir es realistischer gestalten z.B. 5 verschiedene Stressstufen)
-    agent.Stress = rand(Float64)
-    #update niceness > später in Abhängigkeit von Stressresistenz
-    #Kurzform von if else loop
-    agent.Stress > 0.7 ? agent.EmployeeNiceness = false : agent.EmployeeNiceness = true
-    #update employee relations
+    if model.Stress == "constant"
+        agent.Stress = agent.Stress
+    elseif model.Stress == "sine"
+        agent.Stress = sin(model.stepcounter)
+    elseif model.Stress == "rise"
+        agent.Stress = (model.stepcounter)/5 - 1
+    end
+    # observe neighbor niceness
     neighbor_list = neighbors(model.space.graph, agent.pos)
     fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
-    agent.EmployeeRelations = -0.713 * agent.Stress + (fraction_nice + agent.EmployeeRelations)/2
+    # update own niceness
+    agent.EmployeeNiceness = model.agents[rand(neighbor_list)].EmployeeNiceness
+    #update niceness > später in Abhängigkeit von Stressresistenz
+    #update employee relations
+    agent.EmployeeRelations = -0.713 * agent.Stress + (fraction_nice*2) - 1
     agent.EmployeeSatisfaction = 0.262 * agent.EmployeeSatisfaction -0.192 * agent.Stress + 0.738 * agent.EmployeeRelations
     agent.EmployeeMotivation = 0.333 * agent.EmployeeRelations + 0.667 * agent.EmployeeSatisfaction
 end
 
-model = initialize()
-adata, _ = run!(model, agent_step!, 10, adata = [:Stress,
+function model_step!(model)
+    model.stepcounter = model.stepcounter + 1
+    return model
+end
+
+model = initialize(; Stress = "rise")
+adata, _ = run!(model, agent_step!, model_step!, 10, adata = [:Stress,
 :EmployeeNiceness, :EmployeeRelations, :EmployeeSatisfaction, :EmployeeMotivation])
 summarydata = combine(groupby(adata, "step"), :EmployeeMotivation => mean)
 obsdatasumm = combine(groupby(adata, "step"), :Stress => mean,

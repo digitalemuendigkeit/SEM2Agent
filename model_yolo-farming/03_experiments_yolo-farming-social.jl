@@ -1,5 +1,6 @@
 using Agents
 using Plots
+using Statistics
 
 include("02_abm_yolo-farming-social.jl")
 
