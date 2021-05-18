@@ -55,8 +55,8 @@ end
 # participatefract = fraction of agents participating initially
 # policyquality = "true" quality of the new program
 # startyear = year the simulation starts
-function initialize(; socialthreshold = 0.5, participatefract = 0.5,
-    programquality = 0.5, startyear = 2010)
+function initialize(; socialthreshold = 0.5, participatefract = 0.25,
+    programquality = 0.4, startyear = 2010)
     properties = Dict(:socialthreshold => socialthreshold,
                       :participatefract => participatefract,
                       :programquality => programquality,
@@ -123,7 +123,11 @@ function agent_step!(agent, model)
     #     agent.ccexperience = 0 :
     #     agent.ccexperience = agent.ccexperience - 0.05
     # end
-    agent.ccexperience = (2*agent.ccexperience + wateravailability.wachange[model.stepcounter])/3
+    if wateravailability.wachange[model.stepcounter] > 0
+        agent.ccexperience = (4 * agent.ccexperience - mean(wateravailability.wachange[model.stepcounter - 2 : model.stepcounter]))/5
+    else
+        agent.ccexperience = (agent.ccexperience - mean(wateravailability.wachange[model.stepcounter - 2 : model.stepcounter]))/2
+    end
     # Update program participation counter
     agent.participation == true ? agent.ppcounter = agent.ppcounter + 1 : agent.ppcounter = 0
     # Update past policy experience
@@ -138,10 +142,10 @@ function agent_step!(agent, model)
         agent.ppexperience < 0.40 ?
         agent.ppexperience = base_ppexperience :
         agent.ppexperience = agent.ppexperience
-    # If they do participate their perception of the quality increases as
-    # they participate longer
+    # If they do participate their perception of the quality starts off bad but
+    # gets more realistic as they participate longer
     else
-        agent.ppexperience = (base_ppexperience +
+        agent.ppexperience = (base_ppexperience - 0.08 +
                                 model.programquality * agent.ppcounter /
                                 (agent.ppcounter + 2) ) / 2
     end
@@ -157,8 +161,8 @@ function agent_step!(agent, model)
     fraction_participation >= model.socialthreshold ?
      # agent.ppintention = 0.25 + 1.69 * (0.72 * agent.ccrisk - 0.13 * agent.ccexperience) :
      # agent.ppintention = 1.69 * (0.72 * agent.ccrisk - 0.13 * agent.ccexperience)
-     agent.ppintention = 0.5 + agent.ccrisk - 0.18 * agent.ccexperience :
-     agent.ppintention = agent.ccrisk - 0.18 * agent.ccexperience
+     agent.ppintention = 0.28 + 0.72 * agent.ccrisk - 0.13 * agent.ccexperience :
+     agent.ppintention = agent.ccrisk - 0.13 * agent.ccexperience
     # Update participation intention counter
      if agent.ppintention >= 0.5
          agent.ppintcounter = agent.ppintcounter + 1
@@ -170,7 +174,7 @@ function agent_step!(agent, model)
      # Update participation status
      if agent.ppintcounter > 1
          agent.participation = true
-     elseif agent.ppintcounter < -1
+     elseif agent.ppintcounter < 0
          agent.participation = false
      else
          agent.participation = agent.participation
