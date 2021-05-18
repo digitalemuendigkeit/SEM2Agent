@@ -64,21 +64,31 @@ model.properties
 
 function agent_step!(agent, model)
     #update stress (später wollen wir es realistischer gestalten z.B. 5 verschiedene Stressstufen)
-    if model.Stress == "constant"
+    if model.Stress == "constant" #wie vorher; baseline Stress
         agent.Stress = agent.Stress
-    elseif model.Stress == "sine"
+    elseif model.Stress == "sine" #Sinus-Kurse 0-1
         agent.Stress = sin(model.stepcounter)
-    elseif model.Stress == "rise"
-        agent.Stress = (model.stepcounter)/5 - 1
+    elseif model.Stress == "rise" #
+        agent.Stress = agent.Stress + (1 - agent.Stress)/5 #(model.stepcounter)/5 - 1
     end
     # observe neighbor niceness
     neighbor_list = neighbors(model.space.graph, agent.pos)
-    fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
-    # update own niceness
-    agent.EmployeeNiceness = model.agents[rand(neighbor_list)].EmployeeNiceness
+    #sometimes conflicts happen
+    conflict = sample([true, false], Weights([agent.Stress + 1, 1 - agent.Stress]))
+    if conflict == true
+         for i in neighbor_list
+             model.agents[i].EmployeeNiceness = false
+         end
+         agent.EmployeeNiceness = false
+     else
+         fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
+         # update own niceness
+         agent.EmployeeNiceness = model.agents[rand(neighbor_list)].EmployeeNiceness
+     end
+     fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
     #update niceness > später in Abhängigkeit von Stressresistenz
     #update employee relations
-    agent.EmployeeRelations = -0.713 * agent.Stress + (fraction_nice*2) - 1
+    agent.EmployeeRelations = -0.713 * agent.Stress + 0.287 * fraction_nice
     agent.EmployeeSatisfaction = 0.262 * agent.EmployeeSatisfaction -0.192 * agent.Stress + 0.738 * agent.EmployeeRelations
     agent.EmployeeMotivation = 0.333 * agent.EmployeeRelations + 0.667 * agent.EmployeeSatisfaction
 end
@@ -88,7 +98,7 @@ function model_step!(model)
     return model
 end
 
-model = initialize(; Stress = "rise")
+model = initialize(; Stress = "sine")
 adata, _ = run!(model, agent_step!, model_step!, 10, adata = [:Stress,
 :EmployeeNiceness, :EmployeeRelations, :EmployeeSatisfaction, :EmployeeMotivation])
 summarydata = combine(groupby(adata, "step"), :EmployeeMotivation => mean)
