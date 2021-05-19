@@ -11,6 +11,10 @@ using Distributions
 # load data
 ds = DataFrame(Arrow.Table("ModelEmployeesSatMot/data-input/sampleds.arrow"))
 
+# set random seed
+Random.seed!(123)
+
+
 # Define space
 # Use LightGraphs to define space
 # Scale-free network with 100 vertices and 200 edges
@@ -73,19 +77,18 @@ function agent_step!(agent, model)
     end
     # observe neighbor niceness
     neighbor_list = neighbors(model.space.graph, agent.pos)
+    fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
     #sometimes conflicts happen
-    conflict = sample([true, false], Weights([agent.Stress + 1, 1 - agent.Stress]))
-    if conflict == true
-         for i in neighbor_list
-             model.agents[i].EmployeeNiceness = false
-         end
-         agent.EmployeeNiceness = false
-     else
-         fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
+    conflict = sample([true, false], Weights([(agent.Stress + 1)/20, 1 - agent.Stress]))
+    #Nachbar-Agenten auswählen, mit dem Agent interagiert
+    neighbor = model.agents[rand(neighbor_list)]
+    #if conflict == true
+    #     agent.EmployeeNiceness = false
+     #else
+         #fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
          # update own niceness
-         agent.EmployeeNiceness = model.agents[rand(neighbor_list)].EmployeeNiceness
-     end
-     fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
+     #end
+     agent.EmployeeNiceness = neighbor.EmployeeNiceness
     #update niceness > später in Abhängigkeit von Stressresistenz
     #update employee relations
     agent.EmployeeRelations = -0.713 * agent.Stress + 0.287 * fraction_nice
@@ -111,3 +114,5 @@ plotx = obsdatasumm.step
 ploty = Matrix(obsdatasumm[:,2:6])
 plotlabels = ["Stress" "EmployeeNiceness" "EmployeeRelations" "EmployeeSatisfaction" "EmployeeMotivation"]
 plot(plotx, ploty, label = plotlabels, legend = :topright)
+
+#Modell mehrmals laufen lassen und Mittelwert nehmen bei der Auswertung
