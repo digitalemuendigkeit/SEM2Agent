@@ -123,11 +123,12 @@ function agent_step!(agent, model)
     #     agent.ccexperience = 0 :
     #     agent.ccexperience = agent.ccexperience - 0.05
     # end
-    if wateravailability.wachange[model.stepcounter] > 0
-        agent.ccexperience = (4 * agent.ccexperience - mean(wateravailability.wachange[model.stepcounter - 2 : model.stepcounter]))/5
-    else
-        agent.ccexperience = (agent.ccexperience - mean(wateravailability.wachange[model.stepcounter - 2 : model.stepcounter]))/2
-    end
+    agent.ccexperience = (3*agent.ccexperience + 1 - mean(wateravailability.wateravailability[(model.stepcounter - 2) : model.stepcounter])^2)/4
+    # if wateravailability.wachange[model.stepcounter] > 0
+    #     agent.ccexperience = (4 * agent.ccexperience - mean(wateravailability.wachange[(model.stepcounter - 2) : model.stepcounter]))/5
+    # else
+    #     agent.ccexperience = (agent.ccexperience - mean(wateravailability.wachange[(model.stepcounter - 2) : model.stepcounter]))/2
+    # end
     # Update program participation counter
     agent.participation == true ? agent.ppcounter = agent.ppcounter + 1 : agent.ppcounter = 0
     # Update past policy experience
@@ -161,8 +162,8 @@ function agent_step!(agent, model)
     fraction_participation >= model.socialthreshold ?
      # agent.ppintention = 0.25 + 1.69 * (0.72 * agent.ccrisk - 0.13 * agent.ccexperience) :
      # agent.ppintention = 1.69 * (0.72 * agent.ccrisk - 0.13 * agent.ccexperience)
-     agent.ppintention = 0.28 + 0.72 * agent.ccrisk - 0.13 * agent.ccexperience :
-     agent.ppintention = agent.ccrisk - 0.13 * agent.ccexperience
+     agent.ppintention = 0.5 + 0.5 * agent.ccrisk - 0.09 * agent.ccexperience :
+     agent.ppintention = agent.ccrisk - 0.18 * agent.ccexperience
     # Update participation intention counter
      if agent.ppintention >= 0.5
          agent.ppintcounter = agent.ppintcounter + 1

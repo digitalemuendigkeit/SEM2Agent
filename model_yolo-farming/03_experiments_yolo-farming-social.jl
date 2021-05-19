@@ -2,11 +2,13 @@ using Agents
 using Plots
 using Statistics
 using Arrow
+using AgentsPlots
 
+# Include functions
 include("02_abm_yolo-farming-social.jl")
 include("helpers.jl")
 # Which data do we collect?
-datatocollect = [:ccexperience, :ppexperience, :ccbelief, :ccrisk, :ppintention,
+agentdata = [:ccexperience, :ppexperience, :ccbelief, :ccrisk, :ppintention,
 :participation]
 
 # Experiment 1
@@ -15,10 +17,10 @@ datatocollect = [:ccexperience, :ppexperience, :ccbelief, :ccrisk, :ppintention,
 # Initialize model
 model1 = initialize()
 # collect data
-adata, _ = run!(model1, agent_step!, model_step!, agents_first=false, 10,
-adata = datatocollect)
+adata, mdata = run!(model1, agent_step!, model_step!, agents_first=false, 10,
+adata = agentdata, mdata = [:stepcounter], replicates = 100)
 # create summary data
-summarydata1 = sumdata(model1, adata)
+summarydata1 = sumdata(adata, mdata)
 # save summary data
 Arrow.write("model_yolo-farming/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data
@@ -33,12 +35,12 @@ png("model_yolo-farming/data-output/experiment-1_figure.png")
 # influenced socially to participate.
 # The model runs for 10 years, from 2010 to 2020
 # Initialize model
-model2 = initialize(; socialthreshold = 1)
+model2 = initialize(; socialthreshold = 0.75)
 # collect data
 adata, _ = run!(model2, agent_step!, model_step!, agents_first=false, 10,
-adata = datatocollect)
+adata = agentdata, mdata = [:stepcounter], replicates = 100)
 # create summary data
-summarydata2 = sumdata(model2, adata)
+summarydata2 = sumdata(adata, mdata)
 # save summary data
 Arrow.write("model_yolo-farming/data-output/experiment-2_summary.arrow", summarydata1)
 # plot data
@@ -49,14 +51,14 @@ png("model_yolo-farming/data-output/experiment-2_figure.png")
 
 # Experiment 3
 # For the third experiment, we set the initial number of program participants
-# to 0.
+# to 0.5.
 # Initialize model
-model3 = initialize(; participatefract = 0.25, startyear = 2010)
+model3 = initialize(; participatefract = 0.5)
 # collect data
 adata, _ = run!(model3, agent_step!, model_step!, agents_first=false, 10,
-adata = datatocollect)
+adata = agentdata, mdata = [:stepcounter], replicates = 100)
 # create summary data
-summarydata3 = sumdata(model3, adata)
+summarydata3 = sumdata(adata, mdata)
 # save summary data
 Arrow.write("model_yolo-farming/data-output/experiment-3_summary.arrow", summarydata1)
 # plot data
@@ -67,15 +69,15 @@ plot!(title = "Experiment 3")
 png("model_yolo-farming/data-output/experiment-3_figure.png")
 
 # Experiment 4
-# For the third experiment, we set the program quality to -1.
+# For the third experiment, we set the program quality to -0.5.
 # The model runs for 10 years, from 2010 to 2020
 # Initialize model
 model4 = initialize(; programquality = -0.5)
 # collect data
 adata, _ = run!(model4, agent_step!, model_step!, agents_first=false, 10,
-adata = datatocollect)
+adata = agentdata, mdata = [:stepcounter], replicates = 100)
 # create summary data
-summarydata4 = sumdata(model4, adata)
+summarydata4 = sumdata(adata, mdata)
 # save summary data
 Arrow.write("model_yolo-farming/data-output/experiment-4_summary.arrow", summarydata1)
 # plot data
