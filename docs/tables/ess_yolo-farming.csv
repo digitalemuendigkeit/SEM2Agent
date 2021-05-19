@@ -6,11 +6,11 @@ water availability;wachange;change in water availability compared with the previ
 government program;socialthreshold;fraction of neighboring agents needed to exert normative pressure to participate;static;float;[0.25,1]
 government program;participatefract;fraction of farmer agents participating in the program initially;static;float;[0,1]
 government program;programquality;quality of the program balancing climate protection efficacy and costs;static;float;[0,1]
-agent;ccexperience;perceived change in water availability over time (0: more water than before, 0.5: the same, 1: less water than before);dynamic;float;[0,1]
+agent;ccexperience;perceived change in water availability over time (-1: more water than before, 0: the same, 1: less water than before);dynamic;float;[-1,1]
 agent;ppcounter;number of years the agent has participated in the new program;dynamic;int;[0,n(model steps)]
-agent;ppexperience;experience with climate change policy and programs (0: bad experience, 1: good experience);dynamic;float;[0,1]
-agent;ccbelief;belief in climate change (0: does not believe in climate change, 1: does believe in climate change);dynamic;float;[0,1]
-agent;ccrisk;perceived risk of climate change on agriculture (0: no risk, 1: risk);dynamic;float;[0,1]
-agent;ppintention;intention to participate in the new government program (< 0.5: no intention to participate, 0.5 to 0.75: unsure, >= 0.75: intention to participate);dynamic;float;[0,1]
+agent;ppexperience;experience with climate change policy and programs (-1: bad experience, 1: good experience);dynamic;float;[-1,1]
+agent;ccbelief;belief in climate change (-1: does not believe in climate change, 1: does believe in climate change);dynamic;float;[-1,1]
+agent;ccrisk;perceived risk of climate change on agriculture (-1: no risk, 1: risk);dynamic;float;[-1,1]
+agent;ppintention;intention to participate in the new government program (< 0: no intention to participate, 0 to 0.5: unsure, >= 0.5: intention to participate);dynamic;float;[-1,1]
 agent;ppintcounter;number of years with intention to participate or not to participate (counts up for intention to participate, counts down for intention not to participate);dynamic;int;[-n(model steps),n(model steps)]
-agent;participation;wether the agent participates in the new program;dynamic;bool;{false, true}
+agent;participation;whether the agent participates in the new program;dynamic;bool;{false, true}

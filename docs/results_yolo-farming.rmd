@@ -1,0 +1,123 @@
+---
+title: "Yolo farming ABM results"
+description: |
+  The results of the climate program in farming model.
+author:
+  - name: Lilian Kojan
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 1
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(distill)
+library(knitr)
+library(dplyr)
+library(kableExtra)
+library(arrow)
+library(here)
+options(knitr.table.format = "html")
+```
+
+These are the results of the application of the Yolo farming agent-based model.
+This model serves as a demonstration of SEM2Agent scheme for an ABM based on the SEM in:
+
+Niles, M. T., Lubell, M., & Haden, V. R. (2013). Perceptions and responses to climate policy risks among california farmers. Global Environmental Change, 23(6), 1752–1760. https://doi.org/10.1016/j.gloenvcha.2013.08.005
+
+# Model parameters
+
+# Experiments
+## Experiment 1
+```{r}
+# Upload results table.
+read_arrow(here::here("model_yolo-farming", "data-output", "experiment-1_summary.arrow")) %>%
+  as.data.frame() %>%
+  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  transmute(Step = step,
+            Year = year,
+            `Water availability` = wateravailability,
+            `Climate change experience` = paste0(ccexperience_mean, " (±", ccexperience_std, ")"),
+            `Policy experience` = paste0(ppexperience_mean, " (±", ppexperience_std, ")"),
+            `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
+            `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
+            `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
+            `Fraction participating` = participation_mean)  %>% 
+  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
+  kable_styling()
+```
+```{r, out.width="l-body"}
+# Upload figure
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-1_figure.png"))
+```
+
+
+## Experiment 2
+```{r}
+# Upload results table.
+read_arrow(here::here("model_yolo-farming", "data-output", "experiment-2_summary.arrow")) %>%
+  as.data.frame() %>%
+  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  transmute(Step = step,
+            Year = year,
+            `Water availability` = wateravailability,
+            `Climate change experience` = paste0(ccexperience_mean, " (±", ccexperience_std, ")"),
+            `Policy experience` = paste0(ppexperience_mean, " (±", ppexperience_std, ")"),
+            `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
+            `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
+            `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
+            `Fraction participating` = participation_mean)  %>% 
+  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
+  kable_styling()
+```
+```{r, out.width="l-body"}
+# Upload figure
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-2_figure.png"))
+```
+## Experiment 3
+```{r}
+# Upload results table.
+read_arrow(here::here("model_yolo-farming", "data-output", "experiment-3_summary.arrow")) %>%
+  as.data.frame() %>%
+  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  transmute(Step = step,
+            Year = year,
+            `Water availability` = wateravailability,
+            `Climate change experience` = paste0(ccexperience_mean, " (±", ccexperience_std, ")"),
+            `Policy experience` = paste0(ppexperience_mean, " (±", ppexperience_std, ")"),
+            `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
+            `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
+            `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
+            `Fraction participating` = participation_mean)  %>% 
+  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
+  kable_styling()
+```
+```{r, out.width="l-body"}
+# Upload figure
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-3_figure.png"))
+```
+## Experiment 4
+```{r}
+# Upload results table.
+read_arrow(here::here("model_yolo-farming", "data-output", "experiment-4_summary.arrow")) %>%
+  as.data.frame() %>%
+  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  transmute(Step = step,
+            Year = year,
+            `Water availability` = wateravailability,
+            `Climate change experience` = paste0(ccexperience_mean, " (±", ccexperience_std, ")"),
+            `Policy experience` = paste0(ppexperience_mean, " (±", ppexperience_std, ")"),
+            `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
+            `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
+            `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
+            `Fraction participating` = participation_mean)  %>% 
+  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
+  kable_styling()
+```
+```{r, out.width="l-body"}
+# Upload figure
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-4_figure.png"))
+```
+# Summary

@@ -149,7 +149,7 @@ Upon initialization, the following entities are created:
 
 ## Input Data
 ### Overview
-* The data for the agent‘s state variables and parameters comes from the paper by Niles et al. (2013). The level of available data is variable range, as well rough descriptives for the survey answers, and model data.So does exemplary data for the new programs characteristics.
+* The data for the agent‘s state variables and parameters comes from the paper by Niles et al. (2013). The level of available data is variable range, as well rough descriptives for the survey answers, and model data. So does exemplary data for the new programs characteristics.
 *  The data for the availability of water comes from https://www.drought.gov/states/california/county/yolo. The data contains information on the amount of the county experiencing different levels of drought, reported each week.
 
 ### Structure
@@ -180,7 +180,7 @@ All SEM variables except Regulation Concern are selected as state variables char
 The agents are initialized with a value which is randomly sampled based on the descriptive statistics.
 The structural equations with the associated path coefficients are used for each agent to compute the new values for the variables in each time step.
 The variance explained is used as a cap for the maximum change a variable can go through in each model step.
-The initial values are normalized so all scales reach from 0 to 1.
+The initial values are normalized so all scales reach from -1 to 1.
 Similarly, most path coefficients are normalized so their sum is 1.
 
 ```{r}
