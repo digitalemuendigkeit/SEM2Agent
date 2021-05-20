@@ -5,7 +5,7 @@ using Arrow
 
 # Prepare water availability dataframe
 # Load data from U.S. Drought Monitor
-wa_raw = CSV.read("model_yolo-farming\\data-input\\USDM-Yolo-CA.csv", DataFrame, ignoreemptylines=true)
+wa_raw = CSV.read("model_yolo-farming/data-input/USDM-Yolo-CA.csv", DataFrame, ignoreemptylines=true)
 # Extract years for grouping
 wa_raw.Year = SubString.(string.(wa_raw.MapDate), 1, 4)
 # Group years
