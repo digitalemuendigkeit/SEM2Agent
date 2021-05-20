@@ -4,6 +4,11 @@ using Statistics
 using Arrow
 
 include("02_abm_employee_motivation.jl")
+include("helpers_employee-motivation.jl")
+
+# Which data to collect
+agentdata = [:Stress, :EmployeeNiceness, :EmployeeRelations,
+:EmployeeSatisfaction, :EmployeeMotivation]
 
 # Experiment 1
 # For the first experiment, we use the default conditions.
@@ -11,13 +16,9 @@ include("02_abm_employee_motivation.jl")
 # Initialize model
 model1 = initialize()
 # collect data
-adata, _ = run!(model1, agent_step!, model_step!, 20,
-adata = [:Stress,
-:EmployeeNiceness, :EmployeeRelations, :EmployeeSatisfaction, :EmployeeMotivation])
+adata, _ = run!(model1, agent_step!, model_step!, 20, adata = agentdata)
 # create summary data
-summarydata1 = combine(groupby(adata, "step"), :Stress => mean,
-:EmployeeNiceness => mean, :EmployeeRelations => mean, :EmployeeSatisfaction => mean, :EmployeeMotivation
-=> mean)
+summarydata1 = sumdata(adata)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data

@@ -2,11 +2,11 @@ using Agents
 using Plots
 using Statistics
 using Arrow
-using AgentsPlots
+#using AgentsPlots
 
 # Include functions
 include("02_abm_yolo-farming-social.jl")
-include("helpers.jl")
+include("helpers_yolo-farming.jl")
 # Which data do we collect?
 agentdata = [:ccexperience, :ppexperience, :ccbelief, :ccrisk, :ppintention,
 :participation]
