@@ -1,6 +1,6 @@
 # This file contains helper functions for the experiments
 # Summarize agentdata
-function sumdata(adata)
+function sumemployeedata(adata, mdata)
     summarydata = combine(groupby(adata, "step"), :Stress => mean,
                 :Stress => std, :EmployeeNiceness => mean,
                 :EmployeeNiceness => std, :EmployeeRelations => mean,
@@ -11,6 +11,8 @@ function sumdata(adata)
                 :Stress => (x -> quantile(x, 0.75)) => :Stressupper,
                 :EmployeeMotivation => (x -> quantile(x, 0.25)) => :EmployeeMotivationlower,
                 :EmployeeMotivation => (x -> quantile(x, 0.75)) => :EmployeeMotivationupper)
+    mdatasumm = combine(groupby(mdata, "step"), :Success => mean)
+    summarydata = innerjoin(summarydata, mdatasumm, on = :step)
     return summarydata
 end
 
@@ -18,7 +20,7 @@ end
 function plotemployeegraph(summarydata)
     plot(summarydata.step, summarydata.Stress_mean,
     label = "Stress mean", linecolor = "#0077BB", ylims = [-1,1],
-    # legend = :bottom, 
+    # legend = :bottom,
     xlabel = "steps")
     plot!(summarydata.step, summarydata.Stresslower, linealpha = 0,
     fillrange = summarydata.Stressupper, fillcolor ="#0077BB",
@@ -37,4 +39,7 @@ function plotemployeegraph(summarydata)
     plot!(summarydata.step, summarydata.EmployeeMotivationlower, linealpha = 0,
     fillrange = summarydata.EmployeeMotivationupper, fillcolor ="#EE7733",
     fillalpha = 0.15, label = "Motivation Q2-Q3")
+    plot!(summarydata.step, summarydata.Success_mean, linecolor = "#CC3311",
+    #ribbon = summarydata.EmployeeMotivation_std, fillalpha = 0.15,
+    label = "Success mean")
 end

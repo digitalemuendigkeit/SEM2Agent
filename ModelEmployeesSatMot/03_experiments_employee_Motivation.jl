@@ -3,6 +3,7 @@ using Plots
 using Statistics
 using Arrow
 
+# Include scripts for functions
 include("02_abm_employee_motivation.jl")
 include("helpers_employee-motivation.jl")
 
@@ -16,13 +17,15 @@ agentdata = [:Stress, :EmployeeNiceness, :EmployeeRelations,
 # Initialize model
 model1 = initialize()
 # collect data
-adata, _ = run!(model1, agent_step!, model_step!, 20, adata = agentdata)
+adata, mdata = run!(model1, agent_step!, model_step!, 20, adata = agentdata,
+mdata = [:Stress, :Success], replicates = 100)
 # create summary data
-summarydata1 = sumdata(adata)
+summarydata1 = sumemployeedata(adata, mdata)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data
 # define x axis
+plotemployeegraph(summarydata1)
 plotx = summarydata1.step
 # define y axis
 plot1y = Matrix(summarydata1[:, 2:6])
@@ -35,18 +38,16 @@ plot(plotx, plot1y, label = plotlabels, legend = :bottomleft)
 # influenced socially to participate.
 # The model runs for 10 years, from 2010 to 2020
 # Initialize model
-model2 = initialize(;NicenessFraction = 0.75, Stress = "sine")
+model2 = initialize(; NicenessFraction = 0.0, Stress = -1.0, Success = +1.0)
 # collect data
-adata, _ = run!(model2, agent_step!, model_step!, 20,
-adata = [:Stress,
-:EmployeeNiceness, :EmployeeRelations, :EmployeeSatisfaction, :EmployeeMotivation])
+adata, mdata = run!(model2, agent_step!, model_step!, 20, adata = agentdata,
+mdata = [:Stress, :Success], replicates = 100)
 # create summary data
-summarydata1 = combine(groupby(adata, "step"), :Stress => mean,
-:EmployeeNiceness => mean, :EmployeeRelations => mean, :EmployeeSatisfaction => mean, :EmployeeMotivation
-=> mean)
+summarydata2 = sumemployeedata(adata, mdata)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data
+
 # define x axis
 plotx = summarydata1.step
 # define y axis
@@ -62,17 +63,14 @@ plot(plotx, plot1y, label = plotlabels, legend = :bottomleft)
 model3 = initialize(;NicenessFraction = 0.25, Stress = "sine")
 # collect data
 adata, _ = run!(model3, agent_step!, model_step!, 20,
-adata = [:Stress,
-:EmployeeNiceness, :EmployeeRelations, :EmployeeSatisfaction, :EmployeeMotivation])
+adata = agentdata, replicates = 100)
 # create summary data
-summarydata1 = combine(groupby(adata, "step"), :Stress => mean,
-:EmployeeNiceness => mean, :EmployeeRelations => mean, :EmployeeSatisfaction => mean, :EmployeeMotivation
-=> mean)
+summarydata3 = sumdata(adata)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data
 # define x axis
-plotx = summarydata1.step
+plotemployeegraph(summarydata3)
 # define y axis
 plot1y = Matrix(summarydata1[:, 2:6])
 plotlabels = ["Stress" "EmployeeNiceness" "EmployeeRelations" "EmployeeSatisfaction" "EmployeeMotivation"]
@@ -82,18 +80,15 @@ plot(plotx, plot1y, label = plotlabels, legend = :bottomleft)
 
 model4 = initialize(;NicenessFraction = 0.25, Stress = "rise")
 # collect data
-adata, _ = run!(model4, agent_step!, model_step!, 20,
-adata = [:Stress,
-:EmployeeNiceness, :EmployeeRelations, :EmployeeSatisfaction, :EmployeeMotivation])
+adata, _ = run!(model4, agent_step!, model_step!, 20, adata = agentdata,
+replicates = 100)
 # create summary data
-summarydata1 = combine(groupby(adata, "step"), :Stress => mean,
-:EmployeeNiceness => mean, :EmployeeRelations => mean, :EmployeeSatisfaction => mean, :EmployeeMotivation
-=> mean)
+summarydata4 = sumdata(adata)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data
 # define x axis
-plotx = summarydata1.step
+plotemployeegraph(summarydata4)
 # define y axis
 plot1y = Matrix(summarydata1[:, 2:6])
 plotlabels = ["Stress" "EmployeeNiceness" "EmployeeRelations" "EmployeeSatisfaction" "EmployeeMotivation"]
