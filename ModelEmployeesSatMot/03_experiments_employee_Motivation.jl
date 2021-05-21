@@ -15,10 +15,11 @@ agentdata = [:Stress, :EmployeeNiceness, :EmployeeRelations,
 # For the first experiment, we use the default conditions.
 # The model runs for 10 years, from 2010 to 2020
 # Initialize model
-model1 = initialize()
+model1 = initialize(; Stress = -1.0, Success = 1.0, EmployeeValuation = true,
+NicenessFraction = 1.0)
 # collect data
 adata, mdata = run!(model1, agent_step!, model_step!, 20, adata = agentdata,
-mdata = [:Stress, :Success], replicates = 100)
+mdata = [:Success], replicates = 100)
 # create summary data
 summarydata1 = sumemployeedata(adata, mdata)
 # save summary data
@@ -38,16 +39,17 @@ plot(plotx, plot1y, label = plotlabels, legend = :bottomleft)
 # influenced socially to participate.
 # The model runs for 10 years, from 2010 to 2020
 # Initialize model
-model2 = initialize(; NicenessFraction = 0.0, Stress = -1.0, Success = +1.0)
+model2 = initialize(; NicenessFraction = 0.5, Stress = -1.0, Success = 1.0,
+EmployeeValuation = true)
 # collect data
-adata, mdata = run!(model2, agent_step!, model_step!, 20, adata = agentdata,
+adata, mdata = run!(model2, agent_step!, model_step!, 50, adata = agentdata,
 mdata = [:Stress, :Success], replicates = 100)
 # create summary data
 summarydata2 = sumemployeedata(adata, mdata)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data
-
+plotemployeegraph(summarydata2)
 # define x axis
 plotx = summarydata1.step
 # define y axis

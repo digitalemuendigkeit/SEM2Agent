@@ -43,10 +43,12 @@ end
 # StressResistence =
 # NicenessFraction = how many agents are nice in the beginning
 # Success = how successful the company is, 0 is neutral
-function initialize(; NicenessFraction = 0.5, Success = 0.0, Stress = 0.0)
+function initialize(; NicenessFraction = 0.5, Success = 0.0, Stress = 0.0,
+    EmployeeValuation = true)
     properties = Dict(:NicenessFraction => NicenessFraction,
                       :Success => Success,
                       :Stress => Stress,
+                      :EmployeeValuation => EmployeeValuation,
                       :stepcounter => 0)
     model = AgentBasedModel(employee, space; properties = properties, scheduler = random_activation)
     for i in vertices(model.space.graph)
@@ -85,7 +87,7 @@ function agent_step!(agent, model)
     neighbor_list = neighbors(model.space.graph, agent.pos)
     fraction_nice = mean([model.agents[i].EmployeeNiceness for i in neighbor_list])
     #sometimes conflicts happen
-    conflict = sample([true, false], Weights([(agent.Stress + 1)/20, 1 - agent.Stress]))
+    # conflict = sample([true, false], Weights([(agent.Stress + 1)/20, 1 - agent.Stress]))
     #Nachbar-Agenten auswählen, mit dem Agent interagiert
     neighbor = model.agents[rand(neighbor_list)]
     #if conflict == true
@@ -97,17 +99,26 @@ function agent_step!(agent, model)
      agent.EmployeeNiceness = neighbor.EmployeeNiceness
     #update niceness > später in Abhängigkeit von Stressresistenz
     #update employee relations
-    agent.EmployeeRelations = -0.713 * agent.Stress + 0.287 * fraction_nice
-    agent.EmployeeSatisfaction = 0.262 * agent.EmployeeSatisfaction -0.192 * agent.Stress + 0.738 * agent.EmployeeRelations
+    agent.EmployeeRelations = - 0.713 * agent.Stress + 0.287 * fraction_nice
+    agent.EmployeeSatisfaction = - 0.207 * agent.Stress + 0.793 * agent.EmployeeRelations
     agent.EmployeeMotivation = 0.333 * agent.EmployeeRelations + 0.667 * agent.EmployeeSatisfaction
 end
 
 function model_step!(model)
+    # compute stress based on the success of the previous step:
+    # stress is high if success is low and vice-versa
+    if model.Success <= 0
+        model.Stress = (model.Stress - model.Success)/2
+        # + rand(Normal(0,0.341))
+    else
+        model.EmployeeValuation == true ?
+        model.Stress = (model.Stress - model.Success)/2 :
+        model.Stress = (model.Stress + model.Success)/2
+    end
     # get all agents motivation
-    # compute success
     overall_motivation = mean([model.agents[i].EmployeeMotivation for i in allids(model)])
-    model.Stress = (model.Stress + model.Success + rand(Normal(0,0.341)))/3
-    model.Success = (model.Success + overall_motivation^2 + rand(Normal(0,0.341)))/3
+    # compute success based on employee motivation
+    model.Success = (model.Success + overall_motivation)/2
     model.stepcounter = model.stepcounter + 1
     return model
 end
