@@ -21,7 +21,7 @@ end
 function plotgraph(summarydata)
     plot(summarydata.year, summarydata.wateravailability,
     label = "Water availability", linecolor = "#0077BB", ylims = [-1,1],
-    legend = :bottomright, xlabel = "Years = steps")
+    legend = :outerbottommiddle, xlabel = "Years = steps")
     plot!(summarydata.year, summarydata.ppexperience_mean, linecolor = "#EE3377",
     label = "Policy experience mean")
     plot!(summarydata.year, summarydata.ppexperiencelower, linealpha = 0,
@@ -33,5 +33,5 @@ function plotgraph(summarydata)
     fillrange = summarydata.ccexperienceupper, fillcolor ="#EE7733",
     fillalpha = 0.15, label = "Climate change experience Q2-Q3")
     plot!(summarydata.year, summarydata.participation_mean, linecolor = "#009988",
-    fillalpha = 0.15, label = "Participating fraction")
+    fillalpha = 0.15, label = "Participating fraction mean")
 end

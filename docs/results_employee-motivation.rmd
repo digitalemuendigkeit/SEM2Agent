@@ -1,0 +1,56 @@
+---
+title: "Yolo farming ABM results"
+description: |
+  The results of the climate program in farming model.
+author:
+  - name: Lilian Kojan
+date: "`r Sys.Date()`"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 1
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(distill)
+library(knitr)
+library(dplyr)
+library(DT)
+library(arrow)
+library(here)
+options(knitr.table.format = "html")
+```
+
+These are the results of the application of the Yolo farming agent-based model.
+This model serves as a demonstration of SEM2Agent scheme for an ABM based on the SEM in:
+
+Niles, M. T., Lubell, M., & Haden, V. R. (2013). Perceptions and responses to climate policy risks among california farmers. Global Environmental Change, 23(6), 1752–1760. https://doi.org/10.1016/j.gloenvcha.2013.08.005
+
+# Model parameters
+Shortly describe which parameters are manipulated in each experiment.
+
+
+# Experiments
+## Experiment 1
+```{r}
+# Upload results table.
+read_arrow(here::here("ModelEmployeesSatMot", "data-output", "experiment-1_summary.arrow")) %>%
+  as.data.frame() %>%
+  mutate(across(c(2:17), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  transmute(Step = step,
+            `Stress` = paste0(Stress_mean, " (±", Stress_std, ")"),
+            `Fraction of nice employees` = paste0(EmployeeNiceness_mean, " (±", EmployeeNiceness_std, ")"),
+            `Employee relations` = paste0(EmployeeRelations_mean, " (±", EmployeeRelations_std, ")"),
+            `Employee satisfaction` = paste0(EmployeeSatisfaction_mean, " (±", EmployeeSatisfaction_std, ")"),
+            `Employee motivation` = paste0(EmployeeMotivation_mean, " (±", EmployeeMotivation_std, ")"),
+            `Company success` = paste0(Success_mean, " (±", Success_mean, ")"))  %>%
+  datatable(rownames = FALSE, caption = 'Experiment 1 summary results: means (± standard deviation)')
+```
+```{r, out.width="l-body"}
+# Upload figure
+include_graphics(here::here("ModelEmployeesSatMot", "data-output", "experiment-1_figure.png"))
+```
+
+# Summary
+Shortly describe results of experiments.
