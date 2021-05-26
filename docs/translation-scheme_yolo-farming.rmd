@@ -14,6 +14,7 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 library(distill)
+library(knitr)
 library(kableExtra)
 options(knitr.table.format = "html")
 ```
@@ -149,12 +150,18 @@ Upon initialization, the following entities are created:
 
 ## Input Data
 ### Overview
+
 * The data for the agent‘s state variables and parameters comes from the paper by Niles et al. (2013). The level of available data is variable range, as well rough descriptives for the survey answers, and model data. So does exemplary data for the new programs characteristics.
-*  The data for the availability of water comes from https://www.drought.gov/states/california/county/yolo. The data contains information on the amount of the county experiencing different levels of drought, reported each week.
+
+* The data for the availability of water comes from https://www.drought.gov/states/california/county/yolo. The data contains information on the amount of the county experiencing different levels of drought, reported each week.
 
 ### Structure
 In the paper, there are three main types of data:
 Descriptive survey data for all variables in the model (Climate Change Experience, Climate Change Belief, Climate Change Risk, Government Program Participation, Regulation Concern, Past Policy Experience), path coefficients for the relationships between the variables and the variance explained for all variables except Government Program Participation and Regulation Concern.
+
+```{r}
+include_graphics("figures/Yolo-SEM.svg")
+```
 
 ```{r}
 # You can prepare the table as a csv and upload it here.

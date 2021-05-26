@@ -16,10 +16,9 @@ knitr::opts_chunk$set(echo = FALSE)
 library(distill)
 library(knitr)
 library(dplyr)
-library(kableExtra)
+library(DT)
 library(arrow)
 library(here)
-options(knitr.table.format = "html")
 ```
 
 These are the results of the application of the Yolo farming agent-based model.
@@ -28,14 +27,21 @@ This model serves as a demonstration of SEM2Agent scheme for an ABM based on the
 Niles, M. T., Lubell, M., & Haden, V. R. (2013). Perceptions and responses to climate policy risks among california farmers. Global Environmental Change, 23(6), 1752–1760. https://doi.org/10.1016/j.gloenvcha.2013.08.005
 
 # Model parameters
+Each model is initialized with 100 agents and replicated 500 times.
+The results presented here are averaged both over all agents, as well as all replications.
+In the experiments, three model parameters can be manipulated:
+The threshold of neighbors needed to exert normative pressure to participate (default: 0.5), the approximate fraction of agents originally participating in the program (default: 0.25) and the overall program quality (default: 0.4).
 
 # Experiments
 ## Experiment 1
+
+The first experiment runs with the default parameters.
+
 ```{r}
 # Upload results table.
 read_arrow(here::here("model_yolo-farming", "data-output", "experiment-1_summary.arrow")) %>%
   as.data.frame() %>%
-  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
             Year = year,
             `Water availability` = wateravailability,
@@ -44,22 +50,31 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-1_summary
             `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
             `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
             `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
-            `Fraction participating` = participation_mean)  %>% 
-  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
-  kable_styling()
+            `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
+  datatable(rownames = FALSE, caption = 'Experiment 1 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
 ```{r, out.width="l-body"}
 # Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-1_figure.png"))
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-1_figure.svg"))
 ```
 
+As expected, the climate change experience curve runs in reverse to the exogenous water availability.
+The policy experience weakly improves over time.
+The fraction of participants takes a dip in the first step and then also grows.
+On average, 68 % of farmer agents participate after 10 years.
+The variance of participation is large and constant throughout all steps.
+This might be due to the variation in initial conditions.
 
 ## Experiment 2
+
+In the second experiment,the social threshold parameter is increased to 1.
+This implies that all 4 neighbors of an agent have to participate for the neighbor to feel normative pressure to participate themselves.
+
 ```{r}
 # Upload results table.
 read_arrow(here::here("model_yolo-farming", "data-output", "experiment-2_summary.arrow")) %>%
   as.data.frame() %>%
-  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
             Year = year,
             `Water availability` = wateravailability,
@@ -68,20 +83,26 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-2_summary
             `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
             `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
             `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
-            `Fraction participating` = participation_mean)  %>% 
-  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
-  kable_styling()
+            `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
+   datatable(rownames = FALSE, caption = 'Experiment 2 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
 ```{r, out.width="l-body"}
 # Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-2_figure.png"))
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-2_figure.svg"))
 ```
+The climate change experience curve remains broadly unchanged compared to default conditions, and the policy experience curve is also similar.
+The participating fraction, on the other hand, declines in the firs step and then remains constant and low.
+After 10 years, the participation fraction is on average 0.13.
+
 ## Experiment 3
+
+In the third experiment, the fraction of initial participants is increased to 0.5.
+
 ```{r}
 # Upload results table.
 read_arrow(here::here("model_yolo-farming", "data-output", "experiment-3_summary.arrow")) %>%
   as.data.frame() %>%
-  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
             Year = year,
             `Water availability` = wateravailability,
@@ -90,20 +111,26 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-3_summary
             `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
             `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
             `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
-            `Fraction participating` = participation_mean)  %>% 
-  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
-  kable_styling()
+            `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
+  datatable(rownames = FALSE, caption = 'Experiment 3 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
 ```{r, out.width="l-body"}
 # Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-3_figure.png"))
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-3_figure.svg"))
 ```
+Compared to experiments 1 and 2, the fraction of participants increases quickly and strongly until, after 10 years, most agents (M = 0.82) participate in the program.
+The slope of the policy experience curve is slightly less steep, and the variance in experiences is less pronounced.
+This corresponds to the agents having more similar policy experiences, as a larger fraction of them participats in the same new program.
+
 ## Experiment 4
+
+For the last experiment, we set the program quality parameter to -0.4 to reflect a program with overall low quality, e.g., not being efficacious in combating climate, or being overly costly for farmers.
+
 ```{r}
 # Upload results table.
 read_arrow(here::here("model_yolo-farming", "data-output", "experiment-4_summary.arrow")) %>%
   as.data.frame() %>%
-  mutate(across(c(2:13), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
+  mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
             Year = year,
             `Water availability` = wateravailability,
@@ -112,12 +139,24 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-4_summary
             `Climate change belief` = paste0(ccbelief_mean, " (±", ccbelief_std, ")"),
             `Perceived climate change risk` = paste0(ccrisk_mean, " (±", ccrisk_std, ")"),
             `Participation intention` = paste0(ppintention_mean, " (±", ppintention_std, ")"),
-            `Fraction participating` = participation_mean)  %>% 
-  kbl(caption = 'Experiment 1 summary results: means (± standard deviation)') %>%
-  kable_styling()
+            `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
+  datatable(rownames = FALSE, caption = 'Experiment 4 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
 ```{r, out.width="l-body"}
 # Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-4_figure.png"))
+include_graphics(here::here("model_yolo-farming", "data-output", "experiment-4_figure.svg"))
 ```
+For this specification both the participating fraction and the policy experience remain low and constant.
+On average, after 10 years 21 % of participants participate, which is a decline from the initial 25 %.
+
+
 # Summary
+```{r}
+include_graphics(here::here("model_yolo-farming", "data-output", "experiments-summary_figure.svg"))
+```
+
+The experiments re-emphasize the results already discussed by Niles et al., namely that the climate change experience is only one of many factors influencing farmers' participation in climate protective government programs.
+As demonstrated in experiment 4, a program that is perceived to be ineffective or unfair will engender low participation, even if farmers feel the effects of climate change.
+We added subjective norm as a driver for participating intention to complement the path from (perceived) climate change risk to government program participation (intention).
+Varying the influence of subjective norm (experiment 2 and 3) results in strong changes in overall participation.
+While subjective norm can be seen as a placeholder for other drivers of participation, this re-emphasizes the importance of examining what those drivers are and whether they can be utilized to increase government program participation.
