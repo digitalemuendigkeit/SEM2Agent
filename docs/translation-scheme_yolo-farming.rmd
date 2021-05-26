@@ -67,8 +67,9 @@ The agents do not move on the grid.
 ## Process overview and scheduling
 
 In each model step, all agents are activated in random order.
-1.An agent is activated.
-2.They check for the current change in water availability (wachange) and update their climate change experience (ccexperience).
+
+1. An agent is activated.
+2. They check for the current change in water availability (wachange) and update their climate change experience (ccexperience).
 3. They check whether they currently participate in the new program (participation) and update their participation counter (ppcounter).
 4. They compute their policy experience (ppexperience).
 5. They computer their climate change belief (ccbelief).
@@ -144,24 +145,26 @@ It is accessible (on GitHub).
 
 ## Initialization
 Upon initialization, the following entities are created:
-* The water availability, sourced from empirical data.
-* The farmer agents with all values for all state variables sampled from descriptive statistics based on the descriptive statistics reported in the paper. This variability is supposes to represent variability in opinions in real-life farmers.
-* The model program, with values for its „objective“ quality, the fraction of initial participants, and the fraction of neighbors needed to create participation pressure in agents. These values are varied in different simulation experiments to evaluate the success rates for different program characteristics and assumptions about social pressure.
+
+- The water availability, sourced from empirical data.
+- The farmer agents with all values for all state variables sampled from descriptive statistics based on the descriptive statistics reported in the paper. This variability is supposes to represent variability in opinions in real-life farmers.
+- The model program, with values for its „objective“ quality, the fraction of initial participants, and the fraction of neighbors needed to create participation pressure in agents. These values are varied in different simulation experiments to evaluate the success rates for different program characteristics and assumptions about social pressure.
 
 ## Input Data
 ### Overview
 
-* The data for the agent‘s state variables and parameters comes from the paper by Niles et al. (2013). The level of available data is variable range, as well rough descriptives for the survey answers, and model data. So does exemplary data for the new programs characteristics.
-
-* The data for the availability of water comes from https://www.drought.gov/states/california/county/yolo. The data contains information on the amount of the county experiencing different levels of drought, reported each week.
+- The data for the agent‘s state variables and parameters comes from the paper by Niles et al. (2013). The level of available data is variable range, as well rough descriptives for the survey answers, and model data. So does exemplary data for the new programs characteristics.
+- The data for the availability of water comes from https://www.drought.gov/states/california/county/yolo. The data contains information on the amount of the county experiencing different levels of drought, reported each week.
 
 ### Structure
 In the paper, there are three main types of data:
 Descriptive survey data for all variables in the model (Climate Change Experience, Climate Change Belief, Climate Change Risk, Government Program Participation, Regulation Concern, Past Policy Experience), path coefficients for the relationships between the variables and the variance explained for all variables except Government Program Participation and Regulation Concern.
 
-```{r}
-include_graphics("figures/Yolo-SEM.svg")
-```
+<center>
+
+![Figure: SEM from Niles et al. (2013)](figures/Yolo-SEM.svg)
+
+</center>
 
 ```{r}
 # You can prepare the table as a csv and upload it here.
@@ -188,7 +191,7 @@ The agents are initialized with a value which is randomly sampled based on the d
 The structural equations with the associated path coefficients are used for each agent to compute the new values for the variables in each time step.
 The variance explained is used as a cap for the maximum change a variable can go through in each model step.
 The initial values are normalized so all scales reach from -1 to 1.
-Similarly, most path coefficients are normalized so their sum is 1.
+Similarly, path coefficients are normalized so their sum is 1.
 
 ```{r}
 # You can prepare the table as a csv and upload it here.

@@ -27,7 +27,7 @@ summarydata1 = sumdata(adata1, mdata1)
 Arrow.write("model_yolo-farming/data-output/experiment-1_summary.arrow", summarydata1)
 # plot data
 plotgraph(summarydata1)
-plot!(title = "Experiment 1")
+plot!(title = "Experiment 1: Default conditions")
 # save plot
 savefig("model_yolo-farming/data-output/experiment-1_figure.svg")
 savefig("model_yolo-farming/data-output/experiment-1_figure.pdf")
@@ -48,7 +48,7 @@ summarydata2 = sumdata(adata2, mdata2)
 Arrow.write("model_yolo-farming/data-output/experiment-2_summary.arrow", summarydata2)
 # plot data
 plotgraph(summarydata2)
-plot!(title = "Experiment 2")
+plot!(title = "Experiment 2: High social threshold")
 # save plot
 savefig("model_yolo-farming/data-output/experiment-2_figure.svg")
 savefig("model_yolo-farming/data-output/experiment-2_figure.pdf")
@@ -68,7 +68,7 @@ Arrow.write("model_yolo-farming/data-output/experiment-3_summary.arrow", summary
 # plot data
 # plot data
 plotgraph(summarydata3)
-plot!(title = "Experiment 3")
+plot!(title = "Experiment 3: Many initial participants")
 # save plot
 savefig("model_yolo-farming/data-output/experiment-3_figure.svg")
 savefig("model_yolo-farming/data-output/experiment-3_figure.pdf")
@@ -87,7 +87,7 @@ summarydata4 = sumdata(adata4, mdata4)
 Arrow.write("model_yolo-farming/data-output/experiment-4_summary.arrow", summarydata4)
 # plot data
 plotgraph(summarydata4)
-plot!(title = "Experiment 4")
+plot!(title = "Experiment 4: Low program quality")
 # save plot
 savefig("model_yolo-farming/data-output/experiment-4_figure.svg")
 savefig("model_yolo-farming/data-output/experiment-4_figure.pdf")
@@ -98,7 +98,7 @@ sdatalist = [summarydata1, summarydata2, summarydata3, summarydata4]
 
 plot(plotsumgraph(summarydata1), plotsumgraph(summarydata2),
 plotsumgraph(summarydata3), plotsumgraph(summarydata4),
-title = ["Experiment 1" "Experiment 2" "Experiment 3" "Experiment 4"],
+title = ["Experiment 1: Default conditions" "Experiment 2: High social threshold" "Experiment 3: Many initial participants" "Experiment 4: Low program quality"],
 size = (1000,750), margin = 5mm)
 
 #save plot

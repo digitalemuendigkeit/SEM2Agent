@@ -53,6 +53,7 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-1_summary
             `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
   datatable(rownames = FALSE, caption = 'Experiment 1 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
+
 ```{r, out.width="l-body"}
 # Upload figure
 include_graphics(here::here("model_yolo-farming", "data-output", "experiment-1_figure.svg"))

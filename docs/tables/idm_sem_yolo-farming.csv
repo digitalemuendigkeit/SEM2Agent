@@ -1,24 +1,16 @@
 ﻿Source variable;ABM state variable;Range;Intialization;Updating
-Climate Change Experience;ccexperience;[0,1];Random sample from {0,0.5,1} with weights {1,74,68};"if wateravailability.wachange[model.stepcounter] < 0
-        agent.ccexperience == 1 ?
-        agent.ccexperience = 1 :
-        agent.ccexperience = agent.ccexperience + 0.05
-else
-        agent.ccexperience == 0 ?
-        agent.ccexperience = 0 :
-        agent.ccexperience = agent.ccexperience - 0.05
-end"
-Past Policy Experience;ppexperience;[0,1];Mean of random samples from {0,1} for all combinations of policy and efficacy and cost aspects with weights according to percentage of agreement;"if agent.participation == false
-        agent.ppexperience < 0.70 ?
+Climate Change Experience;ccexperience;[-1,1];Random sample from {-1,1,1} with weights {1,74,68};agent.ccexperience = (3*agent.ccexperience + 1 - mean(wateravailability.wateravailability[(model.stepcounter - 2) : model.stepcounter])^2)/4
+Past Policy Experience;ppexperience;[-1,1];Mean of random samples from {-1,1} for all combinations of policy and efficacy and cost aspects with weights according to percentage of agreement;"base_ppexperience = agent.ppexperience + 0.04
+if agent.participation == false
+        agent.ppexperience < 0.40 ?
         agent.ppexperience = base_ppexperience :
-        agent.ppexperience = agent.ppexperience    
+        agent.ppexperience = agent.ppexperience
 else
-        agent.ppexperience = (base_ppexperience +
-                                model.programquality * agent.ppcounter /
+        agent.ppexperience = (base_ppexperience - 0.08 + model.programquality * agent.ppcounter /
                                 (agent.ppcounter + 2) ) / 2
-end"
-Climate Change Belief;ccbelief;[0,1];Random sample from {0,0.25,0.5,0.75,1} with weights according to percentage of agreement;agent.ccbelief = 0.39 * agent.ccbelief + 0.61 * (0.24 * agent.ccexperience + 0.76 * agent.ppexperience)
-Climate Change Risk;ccrisk;[0,1];Random sample from {0,0.25,0.5,0.75,1} with weights according to percentage of agreement;agent.ccrisk = 0.2 * agent.ccrisk + 0.8 * (0.88 * agent.ccbelief + 0.12 * agent.ccexperience - 0.14*agent.ppexperience)
-Government Program Participation;ppintention;[0,1];Random sample from {0,0.25,0.5,0.75,1} with weights according to percentage of agreement;"fraction_participation >= model.socialthreshold ?
-agent.ppintention = 0.25 + 1.69 * (0.72 * agent.ccrisk - 0.13 * agent.ccexperience) :
-agent.ppintention = 1.69 * (0.72 * agent.ccrisk - 0.13 * agent.ccexperience)"
+ end"
+Climate Change Belief;ccbelief;[-1,1];Random sample from {-1,-0.5,0,0.5,1} with weights according to percentage of agreement;agent.ccbelief = 0.39 * agent.ccbelief + 0.61 * (0.24 * agent.ccexperience + 0.76 * agent.ppexperience)
+Climate Change Risk;ccrisk;[-1,1];Random sample from {-1,-0.5,0,0.5,1} with weights according to percentage of agreement;agent.ccrisk = 0.2 * agent.ccrisk + 0.8 * (0.88 * agent.ccbelief + 0.12 * agent.ccexperience - 0.14*agent.ppexperience)
+Government Program Participation;ppintention;[-1,1];Random sample from {-1,-0.5,0,0.5,1} with weights according to percentage of agreement;"fraction_participation >= model.socialthreshold ?
+agent.ppintention = 0.5 + 0.5 * agent.ccrisk - 0.09 * agent.ccexperience :
+agent.ppintention = agent.ccrisk - 0.18 * agent.ccexperience"

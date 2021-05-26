@@ -51,12 +51,12 @@ function plotsumgraph(summarydata)
     label = "Policy experience mean")
     plot!(summarydata.year, summarydata.ppexperiencelower, linealpha = 0,
     fillrange = summarydata.ppexperienceupper, fillcolor ="#EE3377",
-    fillalpha = 0.15, label = "Policy experience Q2-Q3")
+    fillalpha = 0.15, label = "Policy experience Q2&Q3")
     plot!(summarydata.year, summarydata.ccexperience_mean, linecolor = "#EE7733",
     label = "Climate change experience mean")
     plot!(summarydata.year, summarydata.ccexperiencelower, linealpha = 0,
     fillrange = summarydata.ccexperienceupper, fillcolor ="#EE7733",
-    fillalpha = 0.15, label = "Climate change experience Q2-Q3")
+    fillalpha = 0.15, label = "Climate change experience Q2&Q3")
     plot!(summarydata.year, summarydata.participation_mean, linecolor = "#009988",
     fillalpha = 0.15, label = "Participating fraction mean")
 end
