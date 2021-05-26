@@ -24,12 +24,15 @@ Rožman, M., Tominc, P. & Milfelner, B. (2020). A Comparative Study Using Two SE
 
 # Overview
 ## Purpose and patterns
-The purpose of the model is to understand better how stress and employee relations can impact work motivation and satisfaction (for older employees).
-Where employees are stressed, negative employee relationships arise and higher levels of stress also lead to lower employee satisfaction. Good relations in the workplace lead to an increased level of satisfaction. Favorable and positive relations also leads to a higher level of work motivation. In addition, there is a positive connection between employee satisfaction and motivation.
-A possible pattern to evaluate this against would be empirical data on employees stess, relations, work motivation and satisfaction. 
+The purpose of the model is twofold. 
+First, it considers how the stress perception of an agent and the stress departing from a company as well as the perception of the relations at the workplace and of how nice other employees are (Niceness Fraction) influence how satisfied and motivated (elder) employees are. It also considers how the satisfaction of employees influences the motivation of employees. 
+Where employees are stressed, negative employee relationships arise and employees become less nice. Additionally, higher levels of stress also lead to lower employee satisfaction. Good relations in the workplace lead to an increased level of satisfaction. Favorable and positive relations also lead to a higher level of work motivation. In addition, there is a positive connection between employee satisfaction and motivation.
+Second, the model considers, whether the company success is higher or lower when a company values their employees and managers guard their employees against high amounts of company stress. The model shows, whether it is better to increase the company stress to reach higher success or whether company stress must be reduced to keep the motivation of employees high and thus reach more success. 
+
+A possible pattern to evaluate this against would be empirical data on employees stress, relations, work motivation, satisfaction and company success. 
 
 ## Entities, state variables and scales
-The model includes two entities, the employees (huamn agents, dynamic), the workplace (dynamic: changing stress and so on). 
+The model includes two entities, the employees (huamn agents, dynamic), the company (workplace, dynamic). 
 
 The following table shows all entities with their state variables:
 
@@ -49,41 +52,43 @@ read.csv2("tables/StateVariablesEmployees.csv") %>%
 ```						
 
 Representation of time:
-
-
-
-
-Representation of time:
-Each model tic represents one day??/ one exchange between an agent and the other agents???.
-The model can run for a longer time, but we conducted experiments with 50 runs.
+Each model tic represents one work week. 
+The model can run for a longer time, but we conducted experiments with 50 steps (50 weeks).
 
 Representation of space:
 Space is represented in a simplified way.
-The agents are placed on a barabasi albert grid so that each agent has eight neighbors.??
+The agents are placed on a barabasi albert grid so that each agent has eight neighbors.
 The agents do not move on the grid.
 
 ## Process overview and scheduling
-1. Agents are activated (with stress, relations, satisfaction and motivation from the beginning).
-2. The stress is updated.
-3. Agents check their stress and update their relations and satisfaction.
-4. They also check their relations and update their satisfaction and motivation.
-5. They further check their satisfaction and update their motivation.
-All agents are activated simultaneously.
-
+In each model step, all agents are activated in random order.
+1. Agents are activated. The agent modifies his/her niceness: if the stress is very high, they get not nice. If the stress is very low, they get nice. Otherwise, they adjust their niceness to the niceness of a random neighbor. 
+2. The agents adjust their employee relations based on the agent stress and the fraction of nice neighbors.
+3. The agents adjust their employee satisfaction based on the agent stress and employee relations.
+4. The agents adjust their employee motivation based on the employee relations and employee satisfaction. 
+5. The agents adjust their agent stress based on their previous agent stress combined with the company stress. 
+6. The company stress is updated based on the company success and the degree of employee valuation. 
+7. The company success is updated based on the employee motivation. 
 
 # Design concepts
 ## Basic principles
-The model is based on the SEM by Rožman, Tominc and Milfelner (2020). It models the influence of stress on relations and satisfaction, the influence of relations on satisfaction and motivation and how motivation and satisfaction influence each other.
+The model is based on the SEM by Rožman, Tominc and Milfelner (2020). Based on this structural equation model, it models the influence of stress on relations and satisfaction, the influence of relations on satisfaction and motivation and how motivation and satisfaction influence each other.
+
+Additionally, the model considers how the niceness of employees influences the motivation of employees.
+
+Further, it considers how it influences the employee motivation and the company success when companies value their employees (low, medium, high) and managers guard their employees from stress or do not. 
 
 ## Emergence
-The emergent system behavior is how stongly the perceptions of relations and of stress influence the satisfaction and in turn how strongly satisfaction influences motivation and how stronly stress influences relations. Overall, the emergence is that we can observe which variable(s) has/have the strongest influence and when agents are the most satisfied and motivated.
+The emergent system behavior is how stongly the perceptions of relations and of stress influence the satisfaction and in turn how strongly satisfaction influences motivation and how stronly stress influences relations and how strongly niceness influences motivation. 
+Further, the emergent system behavior is how strongly the valuation of employees by reducing stress or not influences company success and employee motivation.
+
+Overall, the emergence is that we can observe which variable(s) has/have the strongest influence and when agents are the most satisfied and motivated as well as when the company success is the highest/lowest. 
 
 ## Individual decision making
 Agents make no intentionally decisions. 
 
 ## Adaptation
 There is no direct adaptation. There is no direct objective-seeking.
-
 
 ## Objectives
 The agents do not have objectives other than being motivated and satisfied, but no intentional objectives.
@@ -98,7 +103,7 @@ Prediction is not explicitly included. Implicitly, the agents predict that chang
 Agents are assumed to exactly sense all external and internal variables. However, that variables input on their state variables is modulated by path coefficients.
 
 ## Interaction
-Agents do not interact with each other. They only perceive relations. 
+In each week, an agent interacts profoundly with one other agent in our model. Additionally, they perceive the overall employee relations.  
 
 ## Heterogeneity
 Agents are homogenous in their decision-making. 
@@ -118,11 +123,14 @@ The model is implemented in Julia using the Agents.jl package. It is accessible 
 
 ## Initialization
 Upon initialization, the following entities are created:
-Stress, sourced from empirical data.
-Relations, sourced from empirical data.
+* Stress, sourced from empirical data.
+* NicenessFraction
+* Success
+* Employee valuation
+(Relations, sourced from empirical data.
 Satisfaction, sourced from empirical data.
 Motivation, sourced from empirical data.
-The employee agents with all values for all state variables drawn from distributions based on the mean survey results reported in the paper. This variability is supposes to represent variability in workplaces or in the perception of employees.
+The employee agents with all values for all state variables drawn from distributions based on the mean survey results reported in the paper. This variability is supposes to represent variability in workplaces or in the perception of employees.)
 
 ## Input Data
 ### Overview
