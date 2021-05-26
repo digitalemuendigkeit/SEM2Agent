@@ -1,0 +1,8 @@
+﻿State Variable;Represents;Unit;Dynamic/Static;Type;Range
+Stress;The change in stress an employee has/ perceives;-;Dynamic;Float;0...1
+Employee Relations;"The relations between the employees/ how employees perceive
+Increases if stress is lower, decreases if stress is higher";-;Dynamic;Float;0...1
+Employee Satisfaction;"The satisfaction of the employees
+Increases if stress is low and/or relations are better, decreases if stress is high and/or relations are worse";-;Dynamic;Float;0...1
+Employee Motivation ;"The motivation of the employees
+Increases if relations are better and/or satisfaction is higher, decreases if reltions are worse and/or satisfaction is lower";-;Dynamic;Float;0...1

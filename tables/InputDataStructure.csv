@@ -1,0 +1,5 @@
+﻿Variable;SEM Data;Descriptive Data
+Stress;S = 2.758;Range: 1...5
+Relations;ER = -0.713 * S;Range: 1...5
+Satisfaction;ES =-0.192 * S + 0.738 * ER;Range: 1...5
+Motivation;EM = 0.329 * ER + 0.659 * ES;Range: 1...5

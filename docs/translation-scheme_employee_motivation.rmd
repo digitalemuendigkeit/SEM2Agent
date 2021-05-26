@@ -20,19 +20,22 @@ options(knitr.table.format = "html")
 
 This is an application of the SEM2Agent scheme for an ABM based on the SEM in:
 
+Rožman, M., Tominc, P. & Milfelner, B. (2020). A Comparative Study Using Two SEM Techniques on Different Samples Sizes for Determining Factors of Older Employee’s Motivation and Satisfaction. Sustainability 2020, 12(6), 2189; https://doi.org/10.3390/su12062189
+
 # Overview
 ## Purpose and patterns
-
-
+The purpose of the model is to understand better how stress and employee relations can impact work motivation and satisfaction (for older employees).
+Where employees are stressed, negative employee relationships arise and higher levels of stress also lead to lower employee satisfaction. Good relations in the workplace lead to an increased level of satisfaction. Favorable and positive relations also leads to a higher level of work motivation. In addition, there is a positive connection between employee satisfaction and motivation.
+A possible pattern to evaluate this against would be empirical data on employees stess, relations, work motivation and satisfaction. 
 
 ## Entities, state variables and scales
+The model includes two entities, the employees (huamn agents, dynamic), the workplace (dynamic: changing stress and so on). 
 
-
-The following table shows all entities with their state variables.
+The following table shows all entities with their state variables:
 
 ```{r}
 # You can prepare the table as a csv and upload it here.
-read.csv2() %>%
+read.csv2("tables/StateVariablesEmployees.csv") %>%
   as.data.frame() %>%
   kbl(col.names = c(
             "Entity",
@@ -47,80 +50,99 @@ read.csv2() %>%
 
 Representation of time:
 
+
+
+
+Representation of time:
+Each model tic represents one day??/ one exchange between an agent and the other agents???.
+The model can run for a longer time, but we conducted experiments with 50 runs.
+
 Representation of space:
-
-
+Space is represented in a simplified way.
+The agents are placed on a barabasi albert grid so that each agent has eight neighbors.??
+The agents do not move on the grid.
 
 ## Process overview and scheduling
+1. Agents are activated (with stress, relations, satisfaction and motivation from the beginning).
+2. The stress is updated.
+3. Agents check their stress and update their relations and satisfaction.
+4. They also check their relations and update their satisfaction and motivation.
+5. They further check their satisfaction and update their motivation.
+All agents are activated simultaneously.
 
 
 # Design concepts
 ## Basic principles
-
+The model is based on the SEM by Rožman, Tominc and Milfelner (2020). It models the influence of stress on relations and satisfaction, the influence of relations on satisfaction and motivation and how motivation and satisfaction influence each other.
 
 ## Emergence
-
+The emergent system behavior is how stongly the perceptions of relations and of stress influence the satisfaction and in turn how strongly satisfaction influences motivation and how stronly stress influences relations. Overall, the emergence is that we can observe which variable(s) has/have the strongest influence and when agents are the most satisfied and motivated.
 
 ## Individual decision making
-
+Agents make no intentionally decisions. 
 
 ## Adaptation
+There is no direct adaptation. There is no direct objective-seeking.
 
 
 ## Objectives
-
+The agents do not have objectives other than being motivated and satisfied, but no intentional objectives.
 
 ## Learning
-
+Learning is not included.
 
 ## Prediction
-
-
+Prediction is not explicitly included. Implicitly, the agents predict that changing levels of stress and relations change their satisfaction.
 
 ## Sensing
-
+Agents are assumed to exactly sense all external and internal variables. However, that variables input on their state variables is modulated by path coefficients.
 
 ## Interaction
-
+Agents do not interact with each other. They only perceive relations. 
 
 ## Heterogeneity
-
+Agents are homogenous in their decision-making. 
 
 ## Stochasticity
-
+Stochasticity is included to generate variability in the initial value of the agent‘s state variables. The values are drawn from a distribution based on the mean and standard deviation values reported in the model (means must be calculated using the single item means). This is done to represent different work-situations (with more/less stress, better/worse relations, different conditions that influence satisfaction)
 
 ## Collectives
-
+There are no collectives in the model.
 
 ## Observation
-
+For each model step, we track the stress, relations, satisfaction and motivation of the agents.
 
 # Details
 ## Implementation details
-
+The model is implemented in Julia using the Agents.jl package. It is accessible (on GitHub).
 
 ## Initialization
-
+Upon initialization, the following entities are created:
+Stress, sourced from empirical data.
+Relations, sourced from empirical data.
+Satisfaction, sourced from empirical data.
+Motivation, sourced from empirical data.
+The employee agents with all values for all state variables drawn from distributions based on the mean survey results reported in the paper. This variability is supposes to represent variability in workplaces or in the perception of employees.
 
 ## Input Data
 ### Overview
-
+The data for the agent‘s state variables comes from the paper by Rožman, Tominc and Milfelner (2020). Available data is only the means and sds from the single items of the four variables and the path coefficients.
 
 ### Structure
+In the paper, there are three main types of data: Descriptive survey data for all variables in the model (Stress, Relations, Satisfaction, Motivation), path coefficients for the relationships between the variables. CB-SEM:
+
 
 
 ```{r}
 # You can prepare the table as a csv and upload it here.
-read.csv2() %>%
+read.csv2("tables/InputDataStructure.csv") %>%
   as.data.frame() %>%
   lapply(function(x) {gsub("\\*", "\\\\*", x)}) %>%
   as.data.frame() %>%
   kbl(col.names = c(
             "Variable",
-            "Range",
-            "Descriptive statistics",
-            "SEM regression equation",
-            "SEM R^2"
+            "SEM Data",
+            "Range"
           ))  %>%
   kable_styling()
 ```				
