@@ -1,8 +1,0 @@
-﻿Source variable;ABM state variable;Range;Initialization;Updating
-Stress;Stress;-1...1;random sample from a normal distribution with M = -0.121, SD = 0.511 ;agent.Stress = (agent.Stress + model.Stress)/2
-Employee Relations;EmployeeRelations;-1...1;random sample from a normal distribution with M = 0.493, SD = 0.425 ;agent.EmployeeRelations = - 0.713 * agent.Stress + 0.287 * (fraction_nice * 2 - 1)
-Employee Satisfaction;EmployeeSatisfaction;-1...1;random sample from a normal distribution with M = 0.263, SD = 0.504 ;agent.EmployeeSatisfaction = - 0.207 * agent.Stress + 0.793 * agent.EmployeeRelations
-Employee Motivation;EmployeeMotivation;-1...1;random sample from a normal distribution with M = 0.205, SD = 0.525 ;agent.EmployeeMotivation = 0.333 * agent.EmployeeRelations + 0.667 * agent.EmployeeSatisfaction
-;;;;
-;;;;
-;;;;
