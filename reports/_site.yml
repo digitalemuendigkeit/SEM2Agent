@@ -1,0 +1,26 @@
+name: "sem2agent"
+title: "Sem2Agent Demo"
+description: |
+  SEM2Agent Demo
+output_dir: "../docs"
+include: [".html"]
+exclude: ["figure", "tables", ".gitignore", "templates"]
+navbar:
+  right:
+    - text: "Home"
+      href: index.html
+    - text: "Employee satisfaction model"
+      icon: fa-graduation-cap
+      menu:
+      - text: "Sem2Agent scheme"
+        href: translation-scheme_employee_motivation.html
+      - text: "Model results"
+        href: results_employee-motivation.html
+    - text: "Environmental policy adoption model"
+      icon: fa-graduation-cap
+      menu:
+      - text: "Sem2Agent scheme"
+        href: translation-scheme_yolo-farming.html
+      - text: "Model results"
+        href: results_yolo-farming.html
+output: distill::distill_article
