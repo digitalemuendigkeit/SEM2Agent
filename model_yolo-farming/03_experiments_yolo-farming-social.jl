@@ -32,6 +32,12 @@ plot!(title = "Experiment 1: Default conditions")
 savefig("model_yolo-farming/data-output/experiment-1_figure.svg")
 savefig("model_yolo-farming/data-output/experiment-1_figure.pdf")
 
+summarydata1 = Arrow.Table("model_yolo-farming/data-output/experiment-1_summary.arrow")
+#plot data for paper
+plotgraphpaper(summarydata1)
+plot!(title = "Experiment 1: Default conditions")
+savefig("model_yolo-farming/data-output/experiment-1_figure_paper.pdf")
+
 # Experiment 2
 # For the second experiment, we set the social threshold to 1.
 # This means that all neighbors have to participate for an agent to be

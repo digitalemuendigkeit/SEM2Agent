@@ -1,7 +1,7 @@
 ---
-title: " translation scheme"
+title: "Employee motivation translation scheme"
 description: |
-  The full SEM2Agent scheme for .
+  The full SEM2Agent scheme for the employee motivation model.
 author:
   - name:
 date: "`r Sys.Date()`"
@@ -109,13 +109,13 @@ In each week, an agent interacts profoundly with one other agent in our model. A
 Agents are homogenous in their decision-making. 
 
 ## Stochasticity
-Stochasticity is included to generate variability in the initial value of the agent‘s state variables. The values are drawn from a distribution based on the mean and standard deviation values reported in the model (means must be calculated using the single item means). This is done to represent different work-situations (with more/less stress, better/worse relations, different conditions that influence satisfaction)
+Stochasticity is included to generate variability in the initial value of the agent‘s state variables. The values are drawn from a distribution based on the mean and standard deviation values reported in the model (means must be calculated using the single item means). This is done to represent different work-situations (with more/less stress, better/worse relations, different conditions that influence satisfaction). 
 
 ## Collectives
 There are no collectives in the model.
 
 ## Observation
-For each model step, we track the stress, relations, satisfaction and motivation of the agents.
+For each model step, we track the stress, niceness, relations, satisfaction and motivation of the agents. Likewise, we track the company stress and the company success.
 
 # Details
 ## Implementation details
@@ -123,14 +123,22 @@ The model is implemented in Julia using the Agents.jl package. It is accessible 
 
 ## Initialization
 Upon initialization, the following entities are created:
+* The employee agent.
+* The company (workplace).
+
+The employee agent is created with the following state variables: 
 * Stress, sourced from empirical data.
-* NicenessFraction
-* Success
-* Employee valuation
-(Relations, sourced from empirical data.
-Satisfaction, sourced from empirical data.
-Motivation, sourced from empirical data.
-The employee agents with all values for all state variables drawn from distributions based on the mean survey results reported in the paper. This variability is supposes to represent variability in workplaces or in the perception of employees.)
+* Relations, sourced from empirical data.
+* Satisfaction, sourced from empirical data.
+* Motivation, sourced from empirical data.
+* NicenessFraction: 0...1.
+
+
+The company is created with the following state variables:
+* Success: -1...1.
+* Employee valuation: low, medium, high. 
+
+The employee agents with all values for all state variables drawn from distributions based on the mean survey results reported in the paper. This variability is supposed to represent variability in workplaces or in the perception of employees.
 
 ## Input Data
 ### Overview
@@ -138,7 +146,6 @@ The data for the agent‘s state variables comes from the paper by Rožman, Tomi
 
 ### Structure
 In the paper, there are three main types of data: Descriptive survey data for all variables in the model (Stress, Relations, Satisfaction, Motivation), path coefficients for the relationships between the variables. CB-SEM:
-
 
 
 ```{r}
@@ -156,27 +163,34 @@ read.csv2("tables/InputDataStructure.csv") %>%
 ```				
 
 ### Mapping
+All SEM variables are selected as state variables characterizing the agent‘s motivation. 
+The agents are initialized with a value which is randomly sampled based on the descriptive statistics.
+The structural equations with the associated path coefficients are used for each agent to compute the new values for the variables in each time step.
+The initial values are normalized so all scales reach from -1 to 1.
+Similarly, most path coefficients are normalized so their sum is 1.
 
 
 ```{r}
 # You can prepare the table as a csv and upload it here.
-# read.csv2() %>%
-#   as.data.frame() %>%
-#   lapply(function(x) {gsub("\\*", "\\\\*", x)}) %>%
-#   as.data.frame() %>%
-#   kbl(col.names = c(
-#             "Source variable",
-#             "ABM state variable",
-#             "Range",
-#             "Initialization",
-#             "Updating"
-#           ))  %>%
-#   kable_styling()
+read.csv2("tables/mappingEmployeeMotivation.csv") %>%
+  as.data.frame() %>%
+  lapply(function(x) {gsub("\\*", "\\\\*", x)}) %>%
+  as.data.frame() %>%
+  kbl(col.names = c(
+            "Source variable",
+            "ABM state variable",
+            "Range",
+            "Initialization",
+            "Updating"
+          ))  %>%
+  kable_styling()
 ```
 
 
 
 ### Patterns
+The regression equations from the SEM are used to calculate the model variables in each step.
 
 
 ## Submodels
+There are no submodels.

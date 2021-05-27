@@ -20,6 +20,7 @@ end
 # Plotting function
 function plotgraph(summarydata)
     plot(summarydata.year, summarydata.wateravailability,
+    # dashed line for water availability line
     label = "Water availability", linecolor = "#0077BB", ylims = [-1,1],
     legend = :bottom,
     # dpi = 300,
@@ -47,6 +48,26 @@ function plotsumgraph(summarydata)
     # dpi = 300,
     xlabel = "Years = steps",
     xticks = (1:10, xticks))
+    plot!(summarydata.year, summarydata.ppexperience_mean, linecolor = "#EE3377",
+    label = "Policy experience mean")
+    plot!(summarydata.year, summarydata.ppexperiencelower, linealpha = 0,
+    fillrange = summarydata.ppexperienceupper, fillcolor ="#EE3377",
+    fillalpha = 0.15, label = "Policy experience Q2&Q3")
+    plot!(summarydata.year, summarydata.ccexperience_mean, linecolor = "#EE7733",
+    label = "Climate change experience mean")
+    plot!(summarydata.year, summarydata.ccexperiencelower, linealpha = 0,
+    fillrange = summarydata.ccexperienceupper, fillcolor ="#EE7733",
+    fillalpha = 0.15, label = "Climate change experience Q2&Q3")
+    plot!(summarydata.year, summarydata.participation_mean, linecolor = "#009988",
+    fillalpha = 0.15, label = "Participating fraction mean")
+end
+
+function plotgraphpaper(summarydata)
+    plot(summarydata.year, summarydata.wateravailability,
+    label = "Water availability", linecolor = "#0077BB", ylims = [-1,1],
+    legend = :bottomright, legendfontsize = 10, tickfontsize = 10,
+    # dpi = 300,
+    xlabel = "Years = steps")
     plot!(summarydata.year, summarydata.ppexperience_mean, linecolor = "#EE3377",
     label = "Policy experience mean")
     plot!(summarydata.year, summarydata.ppexperiencelower, linealpha = 0,

@@ -1,9 +1,9 @@
 ---
-title: "Yolo farming ABM results"
+title: "Employee motivation ABM results"
 description: |
-  The results of the climate program in farming model.
+  The results of the employee motivation model.
 author:
-  - name: Lilian Kojan
+  - name: 
 date: "`r Sys.Date()`"
 output: 
   distill::distill_article:
@@ -51,6 +51,9 @@ read_arrow(here::here("ModelEmployeesSatMot", "data-output", "experiment-1_summa
 # Upload figure
 include_graphics(here::here("ModelEmployeesSatMot", "data-output", "experiment-1_figure.png"))
 ```
+
+In experiment 1, stress increases from below 0.0 to almost 0.5. Contrary, motivation and company success decrease from 0.0 or above to around -0.35. The fraction of nice employees shortly increases and then decreases a bit over the 50 model runs. The change of the fraction of nice employees remains small. 
+
 
 ## Experiment 2
 ```{r}
@@ -216,7 +219,6 @@ include_graphics(here::here("ModelEmployeesSatMot", "data-output", "experiment-9
 Shortly describe results of experiments.
 
 ## Experiment 1
-In experiment 1, stress increases from below 0.0 to almost 0.5. Contrary, motivation and company success decrease from 0.0 or above to around -0.35. The fraction of nice employees shortly increases and then decreases a bit over the 50 model runs. The change of the fraction of nice employees remains small. 
 
 ## Experiment 2
 In experiment 2, stress decreases weakly. Motivation and company success increase weakly. The fracion of nice employees remains almost the same over the model runs. 

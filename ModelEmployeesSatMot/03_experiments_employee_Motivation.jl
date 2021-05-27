@@ -1,7 +1,10 @@
-8using Agents
+using Agents
 using Plots
 using Statistics
 using Arrow
+
+
+pgfplotsx()
 
 # Include scripts for functions
 include("02_abm_employee_motivation.jl")
@@ -26,9 +29,9 @@ Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summa
 # plot data
 # define x axis
 plotemployeegraph(summarydata1)
-plot!(title = "Experiment 1")
+plot!(title = "Employee motivation: Low stress reduction, neutral stress and success")
 # save plot
-png("ModelEmployeesSatMot/data-output/experiment-1_figure.png")
+savefig("ModelEmployeesSatMot/data-output/experiment-1_figure.pdf")
 
 # Experiment 2
 # Neutral starting conditions with medium employee valuation
