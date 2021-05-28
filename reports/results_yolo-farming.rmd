@@ -19,6 +19,8 @@ library(dplyr)
 library(DT)
 library(arrow)
 library(here)
+library(patchwork)
+source(here::here("Visualization.R"))
 ```
 
 These are the results of the application of the Yolo farming agent-based model.
@@ -39,7 +41,7 @@ The first experiment runs with the default parameters.
 
 ```{r}
 # Upload results table.
-read_arrow(here::here("model_yolo-farming", "data-output", "experiment-1_summary.arrow")) %>%
+read_feather(here::here("model_yolo-farming", "data-output", "experiment-1_summary.arrow")) %>%
   as.data.frame() %>%
   mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
@@ -53,10 +55,11 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-1_summary
             `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
   datatable(rownames = FALSE, caption = 'Experiment 1 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
-
-```{r, out.width="l-body"}
-# Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-1_figure.svg"))
+```{r}
+plot1 <- read_feather(here::here("model_yolo-farming", "data-output", "experiment-1_summary.arrow")) %>%
+  as.data.frame() %>% farmerplot()
+plot1 + 
+  ggtitle("1. Program participation: Default parameters")
 ```
 
 As expected, the climate change experience curve runs in reverse to the exogenous water availability.
@@ -73,7 +76,7 @@ This implies that all 4 neighbors of an agent have to participate for the neighb
 
 ```{r}
 # Upload results table.
-read_arrow(here::here("model_yolo-farming", "data-output", "experiment-2_summary.arrow")) %>%
+read_feather(here::here("model_yolo-farming", "data-output", "experiment-2_summary.arrow")) %>%
   as.data.frame() %>%
   mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
@@ -87,10 +90,13 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-2_summary
             `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
    datatable(rownames = FALSE, caption = 'Experiment 2 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
-```{r, out.width="l-body"}
-# Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-2_figure.svg"))
+```{r}
+plot2 <- read_feather(here::here("model_yolo-farming", "data-output", "experiment-2_summary.arrow")) %>%
+  as.data.frame() %>% farmerplot()
+plot2 + 
+  ggtitle("2. Program participation: High social threshold")
 ```
+
 The climate change experience curve remains broadly unchanged compared to default conditions, and the policy experience curve is also similar.
 The participating fraction, on the other hand, declines in the firs step and then remains constant and low.
 After 10 years, the participation fraction is on average 0.13.
@@ -101,7 +107,7 @@ In the third experiment, the fraction of initial participants is increased to 0.
 
 ```{r}
 # Upload results table.
-read_arrow(here::here("model_yolo-farming", "data-output", "experiment-3_summary.arrow")) %>%
+read_feather(here::here("model_yolo-farming", "data-output", "experiment-3_summary.arrow")) %>%
   as.data.frame() %>%
   mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
@@ -115,10 +121,13 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-3_summary
             `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
   datatable(rownames = FALSE, caption = 'Experiment 3 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
-```{r, out.width="l-body"}
-# Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-3_figure.svg"))
+```{r}
+plot3 <- read_feather(here::here("model_yolo-farming", "data-output", "experiment-3_summary.arrow")) %>%
+  as.data.frame() %>% farmerplot()
+plot3 + 
+  ggtitle("3. Program participation: High initial participation")
 ```
+
 Compared to experiments 1 and 2, the fraction of participants increases quickly and strongly until, after 10 years, most agents (M = 0.82) participate in the program.
 The slope of the policy experience curve is slightly less steep, and the variance in experiences is less pronounced.
 This corresponds to the agents having more similar policy experiences, as a larger fraction of them participats in the same new program.
@@ -129,7 +138,7 @@ For the last experiment, we set the program quality parameter to -0.4 to reflect
 
 ```{r}
 # Upload results table.
-read_arrow(here::here("model_yolo-farming", "data-output", "experiment-4_summary.arrow")) %>%
+read_feather(here::here("model_yolo-farming", "data-output", "experiment-4_summary.arrow")) %>%
   as.data.frame() %>%
   mutate(across(c(2:18), ~formatC(round(.x, 2), 2, format = "f", replace.zero = TRUE))) %>%
   transmute(Step = step,
@@ -143,17 +152,30 @@ read_arrow(here::here("model_yolo-farming", "data-output", "experiment-4_summary
             `Fraction participating` = paste0(participation_mean, " (±", participation_std, ")"))  %>% 
   datatable(rownames = FALSE, caption = 'Experiment 4 summary results: means (± standard deviation) for 100 agents and 500 iterations', options = list(pageLength = 11))
 ```
-```{r, out.width="l-body"}
-# Upload figure
-include_graphics(here::here("model_yolo-farming", "data-output", "experiment-4_figure.svg"))
+```{r}
+plot4 <- read_feather(here::here("model_yolo-farming", "data-output", "experiment-2_summary.arrow")) %>%
+  as.data.frame() %>% farmerplot()
+plot4 + 
+  ggtitle("4. Program participation: Low program quality")
 ```
 For this specification both the participating fraction and the policy experience remain low and constant.
 On average, after 10 years 21 % of participants participate, which is a decline from the initial 25 %.
 
 
 # Summary
+
 ```{r}
-include_graphics(here::here("model_yolo-farming", "data-output", "experiments-summary_figure.svg"))
+plot1 + ggtitle("1") + 
+  plot2 + ggtitle("2") +
+  plot3 + ggtitle("3") +
+  plot4 + ggtitle("4") +
+  plot_layout(
+  ncol = 2, 
+    guides = 'collect') +
+  plot_annotation(title = "Employee Motivation: All experiments") &
+  theme(plot.title = element_text(hjust = 0.5), 
+        #legend.position = "bottom"
+        )
 ```
 
 The experiments re-emphasize the results already discussed by Niles et al., namely that the climate change experience is only one of many factors influencing farmers' participation in climate protective government programs.
