@@ -1,9 +1,6 @@
 using Agents
-using Plots
 using Statistics
 using Arrow
-using Measures
-#using AgentsPlots
 
 # Include functions
 include("02_abm_yolo-farming-social.jl")
@@ -25,18 +22,6 @@ adata = agentdata, mdata = [:stepcounter], replicates = 500)
 summarydata1 = sumdata(adata1, mdata1)
 # save summary data
 Arrow.write("model_yolo-farming/data-output/experiment-1_summary.arrow", summarydata1)
-# plot data
-plotgraph(summarydata1)
-plot!(title = "Experiment 1: Default conditions")
-# save plot
-savefig("model_yolo-farming/data-output/experiment-1_figure.svg")
-savefig("model_yolo-farming/data-output/experiment-1_figure.pdf")
-
-summarydata1 = Arrow.Table("model_yolo-farming/data-output/experiment-1_summary.arrow")
-#plot data for paper
-plotgraphpaper(summarydata1)
-plot!(title = "Experiment 1: Default conditions")
-savefig("model_yolo-farming/data-output/experiment-1_figure_paper.pdf")
 
 # Experiment 2
 # For the second experiment, we set the social threshold to 1.
@@ -52,12 +37,6 @@ adata = agentdata, mdata = [:stepcounter], replicates = 100)
 summarydata2 = sumdata(adata2, mdata2)
 # save summary data
 Arrow.write("model_yolo-farming/data-output/experiment-2_summary.arrow", summarydata2)
-# plot data
-plotgraph(summarydata2)
-plot!(title = "Experiment 2: High social threshold")
-# save plot
-savefig("model_yolo-farming/data-output/experiment-2_figure.svg")
-savefig("model_yolo-farming/data-output/experiment-2_figure.pdf")
 
 # Experiment 3
 # For the third experiment, we set the initial number of program participants
@@ -74,10 +53,6 @@ Arrow.write("model_yolo-farming/data-output/experiment-3_summary.arrow", summary
 # plot data
 # plot data
 plotgraph(summarydata3)
-plot!(title = "Experiment 3: Many initial participants")
-# save plot
-savefig("model_yolo-farming/data-output/experiment-3_figure.svg")
-savefig("model_yolo-farming/data-output/experiment-3_figure.pdf")
 
 # Experiment 4
 # For the third experiment, we set the program quality to -0.5.
@@ -91,22 +66,3 @@ adata = agentdata, mdata = [:stepcounter], replicates = 100)
 summarydata4 = sumdata(adata4, mdata4)
 # save summary data
 Arrow.write("model_yolo-farming/data-output/experiment-4_summary.arrow", summarydata4)
-# plot data
-plotgraph(summarydata4)
-plot!(title = "Experiment 4: Low program quality")
-# save plot
-savefig("model_yolo-farming/data-output/experiment-4_figure.svg")
-savefig("model_yolo-farming/data-output/experiment-4_figure.pdf")
-
-
-# Make summary graph
-sdatalist = [summarydata1, summarydata2, summarydata3, summarydata4]
-
-plot(plotsumgraph(summarydata1), plotsumgraph(summarydata2),
-plotsumgraph(summarydata3), plotsumgraph(summarydata4),
-title = ["Experiment 1: Default conditions" "Experiment 2: High social threshold" "Experiment 3: Many initial participants" "Experiment 4: Low program quality"],
-size = (1000,750), margin = 5mm)
-
-#save plot
-savefig("model_yolo-farming/data-output/experiments-summary_figure.svg")
-savefig("model_yolo-farming/data-output/experiments-summary_figure.pdf")

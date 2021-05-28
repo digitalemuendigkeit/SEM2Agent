@@ -1,10 +1,7 @@
 using Agents
-using Plots
 using Statistics
 using Arrow
 
-
-pgfplotsx()
 
 # Include scripts for functions
 include("02_abm_employee_motivation.jl")
@@ -26,12 +23,6 @@ mdata = [:Success], replicates = 500)
 summarydata1 = sumemployeedata(adata1, mdata1)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-1_summary.arrow", summarydata1)
-# plot data
-# define x axis
-plotemployeegraph(summarydata1)
-plot!(title = "Employee motivation: Low stress reduction, neutral stress and success")
-# save plot
-savefig("ModelEmployeesSatMot/data-output/experiment-1_figure.pdf")
 
 # Experiment 2
 # Neutral starting conditions with medium employee valuation
@@ -45,11 +36,6 @@ summarydata2 = sumemployeedata(adata2, mdata2)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-2_summary.arrow",
 summarydata2)
-# plot data
-plotemployeegraph(summarydata2)
-plot!(title = "Experiment 2")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-2_figure.png")
 
 # Experiment 3
 # Neutral starting conditions with high employee valuation
@@ -63,11 +49,6 @@ summarydata3 = sumemployeedata(adata3, mdata3)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-3_summary.arrow",
 summarydata3)
-# plot data
-plotemployeegraph(summarydata3)
-plot!(title = "Experiment 3")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-3_figure.png")
 
 # Experiment 4
 # Positive starting conditions with low employee valuation
@@ -82,12 +63,6 @@ summarydata4 = sumemployeedata(adata4, mdata4)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-4_summary.arrow",
 summarydata4)
-# plot data
-plotemployeegraph(summarydata4)
-plot!(title = "Experiment 4")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-4_figure.png")
-
 
 # Experiment 5
 # Positive starting conditions with medium employee valuation
@@ -102,12 +77,6 @@ summarydata5 = sumemployeedata(adata5, mdata5)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-5_summary.arrow",
 summarydata5)
-# plot data
-plotemployeegraph(summarydata5)
-plot!(title = "Experiment 5")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-5_figure.png")
-
 
 # Experiment 6
 # Positive starting conditions with high employee valuation
@@ -122,11 +91,6 @@ summarydata6 = sumemployeedata(adata6, mdata6)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-6_summary.arrow",
 summarydata6)
-# plot data
-plotemployeegraph(summarydata6)
-plot!(title = "Experiment 6")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-6_figure.png")
 
 # Experiment 7
 # Negative starting conditions with low employee valuation
@@ -141,11 +105,6 @@ summarydata7 = sumemployeedata(adata7, mdata7)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-7_summary.arrow",
 summarydata7)
-# plot data
-plotemployeegraph(summarydata7)
-plot!(title = "Experiment 7")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-7_figure.png")
 
 # Experiment 8
 # Negative starting conditions with medium employee valuation
@@ -160,11 +119,6 @@ summarydata8 = sumemployeedata(adata8, mdata8)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-8_summary.arrow",
 summarydata8)
-# plot data
-plotemployeegraph(summarydata8)
-plot!(title = "Experiment 8")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-8_figure.png")
 
 # Experiment 9
 # Negative starting conditions with high employee valuation
@@ -179,8 +133,3 @@ summarydata9 = sumemployeedata(adata9, mdata9)
 # save summary data
 Arrow.write("ModelEmployeesSatMot/data-output/experiment-9_summary.arrow",
 summarydata9)
-# plot data
-plotemployeegraph(summarydata9)
-plot!(title = "Experiment 9")
-# save plot
-png("ModelEmployeesSatMot/data-output/experiment-9_figure.png")

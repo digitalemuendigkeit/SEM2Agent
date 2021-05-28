@@ -279,7 +279,7 @@ plot9 +
 In experiment 9, the stress increases strongly in the beginning, then it increases weakly, before it decreases for the remaining model runs. The motivation decreases strongly in the beginning, stays the same for one model run and increases then for the remaining model steps. The company success increases strongly in the beginning, then weakly and then in parallel to the motivation. The fraction of nice employees increases in the beginning and remains then the same until the 50th model run.
 
 # Summary
-```{r, out.width="l-body-outset"}
+```{r fig.height=6}
 plot1 + ggtitle("1") + 
   plot2 + ggtitle("2") +
   plot3 + ggtitle("3") +
@@ -300,4 +300,4 @@ plot1 + ggtitle("1") +
 ```
 In all experiments, high stress reduction leads to the most positive outcomes in terms of both stress and success.
 Motivation and success run mostly parallel which is to be expected seeing as success depends on motivation.
-The fraction of nice employees runs is mostly independent from the other variables.
+The fraction of nice employees runs mostly independent from the other variables.

@@ -1,23 +1,21 @@
 name: "sem2agent"
-title: "Sem2Agent Demo"
+title: "Sem2Agent Scheme Supplementary Material"
 description: |
-  SEM2Agent Demo
+  Sem2Agent Scheme Supplementary Material
 output_dir: "../docs"
 include: [".html"]
 exclude: ["figure", "tables", ".gitignore", "templates"]
 navbar:
-  right:
+  left:
     - text: "Home"
       href: index.html
-    - text: "Employee satisfaction model"
-      icon: fa-graduation-cap
+    - text: "Employee motivation model"
       menu:
       - text: "Sem2Agent scheme"
         href: translation-scheme_employee_motivation.html
       - text: "Model results"
         href: results_employee-motivation.html
     - text: "Environmental policy adoption model"
-      icon: fa-graduation-cap
       menu:
       - text: "Sem2Agent scheme"
         href: translation-scheme_yolo-farming.html
