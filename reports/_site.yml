@@ -21,4 +21,6 @@ navbar:
         href: translation-scheme_yolo-farming.html
       - text: "Model results"
         href: results_yolo-farming.html
+    - text: "Site notice"
+      href: site-notice.html
 output: distill::distill_article

@@ -3,7 +3,7 @@ title: "Employee motivation ABM results"
 description: |
   The results of the employee motivation model.
 author:
-  - name: 
+  - name: Laura Burbach
 date: "`r Sys.Date()`"
 output: 
   distill::distill_article:

@@ -3,7 +3,7 @@ title: "Yolo farming translation scheme"
 description: |
   The full SEM2Agent scheme for the climate program in farming model.
 author:
-  - name: 
+  - name: Lilian Kojan
 date: "`r Sys.Date()`"
 output: 
   distill::distill_article:

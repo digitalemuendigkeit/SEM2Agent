@@ -1,6 +1,7 @@
 using Agents
 using Statistics
 using Arrow
+using AgentsPlots
 
 # Include functions
 include("02_abm_yolo-farming-social.jl")
@@ -18,6 +19,29 @@ model1 = initialize()
 # collect data
 adata1, mdata1 = run!(model1, agent_step!, model_step!, agents_first=false, 10,
 adata = agentdata, mdata = [:stepcounter], replicates = 500)
+# plot
+agentplotdata = sort(adata1, ["id"])
+function plotgraph(agentplotdata)
+    p = plot(agentplotdata.step[1:11], agentplotdata.participation[1:11])
+    for i in 2:100
+        p = plot!(agentplotdata.step[(11*i-10):11*i], agentplotdata.participation[(11*i-10):11*i])
+    end
+    return p
+end
+
+function plotgraph2(agentplotdata)
+    p = plot(agentplotdata.step[1:11], agentplotdata.ccexperience[1:11])
+    for i in 2:100
+        p = plot!(agentplotdata.step[(11*i-10):11*i], agentplotdata.ccexperience[(11*i-10):11*i])
+    end
+    return p
+end
+
+plotgraph(one)
+plotgraph2(one)
+
+one = agentplotdata[agentplotdata.replicate .== 1, :]
+one[one.step .== 0, :]
 # create summary data
 summarydata1 = sumdata(adata1, mdata1)
 # save summary data
