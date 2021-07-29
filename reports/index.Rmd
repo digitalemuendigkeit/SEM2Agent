@@ -15,3 +15,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 The SEM2Agent scheme facilitates the systematic use of structural equation model data in agent-based models.
 On this website, we demonstrate the application of this scheme for two models, and present the model results.
+The code for both models and this website can be found at [https://github.com/digitalemuendigkeit/SEM2Agent](https://github.com/digitalemuendigkeit/SEM2Agent).
+
+The paper with the title "SEM2Agent - A Scheme for the Use of Structural Equation Model Data in Agent-Based Models" will be presented at the [Social Science Conference 2021](https://ssc2021.uek.krakow.pl/).
+Once the proceedings are published, a DOI will be added to this site.
