@@ -1,7 +1,7 @@
 ---
-title: "Yolo farming ABM results"
+title: "Environmental program participation ABM results"
 description: |
-  The results of the climate program in farming model.
+  The results of the environmental program participation model.
 author:
   - name: Lilian Kojan
 date: "`r Sys.Date()`"

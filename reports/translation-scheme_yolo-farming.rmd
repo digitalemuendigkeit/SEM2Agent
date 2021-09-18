@@ -1,7 +1,7 @@
 ---
-title: "Yolo farming translation scheme"
+title: "Environmental program participation translation scheme"
 description: |
-  The full SEM2Agent scheme for the climate program in farming model.
+  The full SEM2Agent scheme for the environmental program participation model.
 author:
   - name: Lilian Kojan
 date: "`r Sys.Date()`"
@@ -27,7 +27,7 @@ Niles, M. T., Lubell, M., & Haden, V. R. (2013). Perceptions and responses to cl
 # Overview
 ## Purpose and patterns
 The main purpose of this model is to demonstrate the SEM2Agent translation scheme.
-The secondary purpose is to examine the participation of farmers in a new climate policy program  dependent on their with such programs, their experience of experience of climate change and normative pressure.
+The secondary purpose is to examine the participation of farmers in a new climate policy program dependent on their experience with such programs, their experience of climate change and normative pressure.
 A possible pattern to evaluate this against would be empirical data on farmer‘s participation in such programs.
 
 
